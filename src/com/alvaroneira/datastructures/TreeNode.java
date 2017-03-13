@@ -1,4 +1,4 @@
-package CareerCupLibrary;
+package com.alvaroneira.datastructures;
 
 /* One node of a binary tree. The data element stored is a single 
  * character.

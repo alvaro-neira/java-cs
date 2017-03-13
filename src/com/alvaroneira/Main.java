@@ -1,13 +1,25 @@
 package com.alvaroneira;
 
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.PriorityQueue;
+import com.alvaroneira.datastructures.TreeNode;
+
+import java.util.*;
 
 public class Main {
 
     public static void main(String[] args) {
+        /**
+         * ArrayList
+         */
+        ArrayList<Integer> arrayList = new ArrayList<>();
+        arrayList.add(11);
+        arrayList.sort();
+
+
+        /**
+         * LinkedList (it's doubly linked)
+         */
+        LinkedList<Integer> head = new LinkedList<Integer>();
+
         /**
          * PriorityQueue
          */
@@ -29,11 +41,18 @@ public class Main {
         /**
          * HashSet
          */
-        HashSet<String> hashSet=new HashSet<>();
+        HashSet<String> hashSet = new HashSet<>();
         hashSet.add("hello");            //O(1)
         hashSet.contains("hello");       //O(1)
         hashSet.size();                  //O(1)
         hashSet.remove("hello");      //O(1)
+
+        /**
+         * BinarySearchTree
+         */
+        TreeNode root = new TreeNode(12);
+        root.insertInOrder(10);
+        root.height(); //O(log n)
 
     }
 
