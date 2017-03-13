@@ -1,4 +1,4 @@
-package Question20_8;
+package com.alvaroneira.datastructures;
 
 import java.util.ArrayList;
 import java.util.HashMap;
