@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AmazonTest1
+//public class AmazonTest1
+public class NeighboursDayChange
 {
     // METHOD SIGNATURE BEGINS, THIS METHOD IS REQUIRED
     public List<Integer> cellCompete(int[] states, int days)

@@ -8,6 +8,12 @@ public class Main {
 
     public static void main(String[] args) {
         /**
+         * Arrays
+         */
+//        List aList = Arrays.asList();
+//        aList.contains();
+
+        /**
          * ArrayList
          */
         ArrayList<Integer> arrayList = new ArrayList<>();
