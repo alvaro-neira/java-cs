@@ -2,7 +2,7 @@ package com.alvaroneira.questions;
 
 /**
  * Codility Demo Question: Find the smallest positive integer that does not occur in a given sequence.
- * 
+ *
  * Task description
  *
  * This is a demo task.
@@ -168,6 +168,7 @@ public class MissingInteger {
         A[4]=4;
         A[5]=5;
         Assert.assertEquals(6, mi.solution(A));
+        Assert.assertEquals(9, mi.solution(new int[]{2,1,5,4,8,7,10,3,6}));
     }
 
 }
