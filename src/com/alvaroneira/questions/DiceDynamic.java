@@ -95,10 +95,7 @@ public class DiceDynamic {
 
         for (i = 2; i <= n; i++) {
             for (j = 2; j <= price; j++) {
-                int val = ArrayUtils.java8max(
-                        DP[i - 1][j],
-                        MAXES[i][j] + A[j - 1],
-                        DP[i][j - 1] + A[j - 1]);
+                int val = Math.max(DP[i - 1][j], MAXES[i][j] + A[j - 1]);
                 DP[i][j] = val;
                 if (j >= price) {
                     continue;
