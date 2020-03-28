@@ -52,54 +52,149 @@ import static com.alvaroneira.utils.ArrayUtils.printMatrix;
  * each element of array A is an integer within the range [−10,000..10,000].
  */
 public class DiceDynamic {
-    //Works only with A.length<=4
     public int solution(int[] A) {
         // write your code in Java SE 8
-        int fullSum=ArrayUtils.java8sum(A);
-        int price=A.length;
-        int[] denominations=new int[]{1,2,3,4,5,6};
+
+        int j;
+        int i;
+
+        int price = A.length;
+        int MIN_INT = -10000 * price;
+        int[] denominations = new int[]{1, 2, 3, 4, 5, 6};
+        int n = denominations.length;
+
+        //Create two-dimensional array
+        int[][] DP = new int[n + 1][price + 1];
+        //First Row
+        for (int tmp1 = 0; tmp1 <= price; tmp1++) {
+            DP[0][tmp1] = MIN_INT;
+        }
+        //First Column
+        for(int tmp2 = 0; tmp2 <= n; tmp2++){
+            DP[tmp2][0] = MIN_INT;
+        }
+        //Second Column
+        for(int tmp3 = 1; tmp3 <= n; tmp3++){
+            DP[tmp3][1] = A[0];
+        }
+
+        for (i = 1; i <= n; i++) {
+            for (j = 2; j <= price; j++) {
+                DP[i][j] = ArrayUtils.java8max(
+                        DP[i - 1][j],
+                        ArrayUtils.arrayMax(DP[i], j-6, j - i, MIN_INT) + A[j - 1],
+                        DP[i][j - 1] + A[j - 1]);
+            }
+        }
+
+        return DP[n][price];
+    }
+
+    public static void main(String[] args) {
+        DiceDynamic dd = new DiceDynamic();
+        Assert.assertEquals(9, dd.solution(new int[]{9}));
+        Assert.assertEquals(19, dd.solution(new int[]{9, 10}));
+        Assert.assertEquals(-1, dd.solution(new int[]{9, -10}));
+        Assert.assertEquals(-19, dd.solution(new int[]{-9, -10}));
+        Assert.assertEquals(9, dd.solution(new int[]{2, 3, 4}));
+        Assert.assertEquals(-6, dd.solution(new int[]{-2, -3, -4}));
+        Assert.assertEquals(2, dd.solution(new int[]{-2, -3, 4}));
+        Assert.assertEquals(-3, dd.solution(new int[]{-2, 3, -4}));
+        Assert.assertEquals(14, dd.solution(new int[]{2, 3, 4, 5}));
+        Assert.assertEquals(10, dd.solution(new int[]{2, 3, -4, 5}));
+        Assert.assertEquals(52, dd.solution(new int[]{2, -3, -4, 50}));
+        Assert.assertEquals(62, dd.solution(new int[]{2, -3, -4, 50, 10}));
+        Assert.assertEquals(62, dd.solution(new int[]{2, 50, -3, -4, 10}));
+        Assert.assertEquals(9, dd.solution(new int[]{1, -2, 0, 9, -1}));
+        Assert.assertEquals(8, dd.solution(new int[]{1, -2, 0, 9, -1, -2}));
+        Assert.assertEquals(-3, dd.solution(new int[]{-3}));
+        Assert.assertEquals(-7, dd.solution(new int[]{-3, -4}));
+        Assert.assertEquals(-6, dd.solution(new int[]{-3, -4, -3}));
+        Assert.assertEquals(-1, dd.solution(new int[]{-3, -4, -3, 2}));
+        Assert.assertEquals(-8, dd.solution(new int[]{-3, -4, -3, 2, -7}));
+        Assert.assertEquals(-2, dd.solution(new int[]{-3, -4, -3, 2, -7, -1}));
+        Assert.assertEquals(-0, dd.solution(new int[]{0}));
+        Assert.assertEquals(-4, dd.solution(new int[]{0, -4}));
+        Assert.assertEquals(-5, dd.solution(new int[]{0, -4, -5}));
+        Assert.assertEquals(-2, dd.solution(new int[]{0, -4, -5, -2}));
+        Assert.assertEquals(-7, dd.solution(new int[]{0, -4, -5, -2, -7}));
+        Assert.assertEquals(-9, dd.solution(new int[]{0, -4, -5, -2, -7, -9}));
+        Assert.assertEquals(-3, dd.solution(new int[]{0, -4, -5, -2, -7, -9, -3}));
+        Assert.assertEquals(-12, dd.solution(new int[]{0, -4, -5, -2, -7, -9, -3, -10}));
+    }
+
+    public int solution2(int[] A) {
+        // write your code in Java SE 8
+
+        int j;
+        int i;
+
+        int price = A.length;
+        int MIN_INT=-10000*price;
+
+        int[] denominations = new int[]{1, 2, 3, 4, 5, 6};
+        int n = denominations.length;
+        //create two-dimensional array
+        int[][] DP = new int[n + 1][price + 1];
+        for (int tmp1 = 1; tmp1 <= price; tmp1++) {
+            DP[0][tmp1] = MIN_INT;
+        }
+
+        for (i = 1; i <= n; i++) {
+            for (j = 1; j <= price; j++) {
+                DP[i][j] = ArrayUtils.java8max(
+                        DP[i - 1][j],
+                        (j > i ? DP[i][j - i] + A[j - 1] : MIN_INT),
+                        DP[i][j - 1] + A[j - 1]);
+            }
+        }
+
+        return DP[n][price];
+    }
+
+    public int solution1(int[] A) {
+        // write your code in Java SE 8
+
+        int j;
+        int i;
+
+        int price = A.length;
+        int MIN_INT=-10000*price;
+
+        int[] denominations = new int[]{1, 2, 3, 4, 5, 6};
         int n = denominations.length;
         //create two-dimensional array
         int[][] DP = new int[n + 1][price + 1];
 
-        for (int swa = 0; swa < 1; swa++) {
-            for (int swe = 1; swe < DP[0].length; swe++) {
-                DP[swa][swe] = MIN_INT;
-            }
+        for (int tmp1 = 1; tmp1 < DP[0].length; tmp1++) {
+            DP[0][tmp1] = MIN_INT;
         }
 
-        for (int i = 1; i <= n; i++) {
-            DP[i][1] = fullSum;
+        for (int tmp2 = 1; tmp2 <= n; tmp2++) {
+            DP[tmp2][1] = A[0];
         }
 
-        int j;
-
-        for (int i = 1; i <= n; i++) {
-            for (j = 2; j <= price; j++) {
-                int val=DP[i][j-1];
-                if(j>2 && fullSum-A[1]>val){
-                    val=fullSum-A[1];
-                }
-                if(j>3 && fullSum-A[2]>val){
-                    val=fullSum-A[2];
-                }
-                if(j>3 && fullSum-A[1]-A[2]>val){
-                    val=fullSum-A[1]-A[2];
-                }
-                DP[i][j] = val;
-            }
+        //Second row
+        for (int tmp3 = 2; tmp3 <= price; tmp3++) {
+            DP[1][tmp3] = A[tmp3 - 1] + DP[1][tmp3 - 1];
         }
 
-//        int j;
-//        for (int i = 1; i <= n; i++) {
-//            for (j = 0; j < denominations[i - 1]; j++) {
-//                DP[i][j] = DP[i - 1][j];
-//            }
-//            for (j = denominations[i - 1]; j <= price; j++) {
-////                DP[i][j] = Math.max(DP[i][j - denominations[i - 1]] + 1, DP[i - 1][j]);
-//                DP[i][j] = Math.max(DP[i][j - denominations[i - 1]] + 1, DP[i - 1][j]);
+//        for (i = 2; i <= n; i++) {
+//            for (j = 2; j <= Math.min(price, 4); j++) {
+//                DP[i][j] = ArrayUtils.java8max(
+//                        DP[i - 1][j],
+//                        DP[1][j] - (j > 2 ? A[j - 2] : 0) - (j > 3 && i >= 3 ? A[j - 3] : 0),
+//                        DP[i][j - 1] + A[j - 1]);
 //            }
 //        }
+        for (i = 2; i <= n; i++) {
+            for(j=2;j<=price;j++){
+                DP[i][j] = ArrayUtils.java8max(
+                        DP[i-1][j],
+                        DP[1][j] - ArrayUtils.sum(A,Math.max(1,j-i),j-1),
+                        DP[i][j-1]+A[j-1]);
+            }
+        }
         printMatrix(DP);
         return DP[n][price];
     }
@@ -108,6 +203,8 @@ public class DiceDynamic {
         // write your code in Java SE 8
         int fullSum=ArrayUtils.java8sum(A);
         int price=A.length;
+        int MIN_INT=-10000*price;
+
         if(price<3){
             return fullSum;
         }
@@ -141,22 +238,5 @@ public class DiceDynamic {
         }
         printMatrix(DP);
         return DP[n][price];
-    }
-    public static int MIN_INT = -100000;
-
-    public static void main(String[] args) {
-        DiceDynamic dd = new DiceDynamic();
-        Assert.assertEquals(9, dd.solution(new int[]{9}));
-        Assert.assertEquals(19, dd.solution(new int[]{9, 10}));
-        Assert.assertEquals(-1, dd.solution(new int[]{9, -10}));
-        Assert.assertEquals(-19, dd.solution(new int[]{-9, -10}));
-        Assert.assertEquals(9, dd.solution(new int[]{2, 3, 4}));
-        Assert.assertEquals(-6, dd.solution(new int[]{-2, -3, -4}));
-        Assert.assertEquals(2, dd.solution(new int[]{-2, -3, 4}));
-        Assert.assertEquals(-3, dd.solution(new int[]{-2, 3, -4}));
-        Assert.assertEquals(14, dd.solution(new int[]{2, 3, 4, 5}));
-        Assert.assertEquals(10, dd.solution(new int[]{2, 3, -4, 5}));
-        Assert.assertEquals(7, dd.solution(new int[]{2, -3, -4, 5}));
-//        Assert.assertEquals(15, dd.solution(new int[]{2, 3, 4, 5, 1}));
     }
 }

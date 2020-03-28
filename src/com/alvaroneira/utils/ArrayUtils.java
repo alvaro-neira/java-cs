@@ -26,6 +26,39 @@ public class ArrayUtils {
         return false;
     }
 
+    public static int sum(int[] A, int ini, int end) {
+        if (ini < 0) {
+            ini = 0;
+        }
+        if (end > A.length) {
+            end = A.length;
+        }
+        int retVal = 0;
+        for (int i = ini; i < end; i++) {
+            retVal += A[i];
+        }
+        return retVal;
+    }
+
+    public static int arrayMax(int[] A, int ini, int end, int defaultValue) {
+        if (end < ini) {
+            return defaultValue;
+        }
+        if (ini < 0) {
+            ini = 0;
+        }
+        if (end > A.length){
+            end = A.length;
+        }
+        int retVal = A[ini];
+        for (int i = ini + 1; i < end; i++) {
+            if (A[i] > retVal) {
+                retVal = A[i];
+            }
+        }
+        return retVal;
+    }
+
     public static boolean java8contains(int[] A, int n) {
         return IntStream.of(A).anyMatch(x -> x == n);
     }
