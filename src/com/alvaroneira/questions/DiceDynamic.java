@@ -66,24 +66,48 @@ public class DiceDynamic {
         //Create two-dimensional array
         int[][] DP = new int[n + 1][price + 1];
         //First Row
-        for (int tmp1 = 0; tmp1 <= price; tmp1++) {
-            DP[0][tmp1] = MIN_INT;
+        for (int tmp = 0; tmp <= price; tmp++) {
+            DP[0][tmp] = MIN_INT;
         }
         //First Column
-        for(int tmp2 = 0; tmp2 <= n; tmp2++){
-            DP[tmp2][0] = MIN_INT;
+        for (int tmp = 0; tmp <= n; tmp++) {
+            DP[tmp][0] = MIN_INT;
         }
         //Second Column
-        for(int tmp3 = 1; tmp3 <= n; tmp3++){
-            DP[tmp3][1] = A[0];
+        for (int tmp = 1; tmp <= n; tmp++) {
+            DP[tmp][1] = A[0];
+        }
+        //Second Row
+        for (int tmp = 2; tmp <= price; tmp++) {
+            DP[1][tmp] = A[tmp - 1] + DP[1][tmp - 1];
         }
 
-        for (i = 1; i <= n; i++) {
+        int[][] MAXES = new int[n + 1][price + 1];
+        for (i = 2; i <= n; i++) {
             for (j = 2; j <= price; j++) {
-                DP[i][j] = ArrayUtils.java8max(
+                MAXES[i][j] = MIN_INT;
+            }
+        }
+
+        for (int tmp = 0; tmp < price && tmp <= n; tmp++) {
+            MAXES[tmp][tmp + 1] = A[0];
+        }
+
+        for (i = 2; i <= n; i++) {
+            for (j = 2; j <= price; j++) {
+                int val = ArrayUtils.java8max(
                         DP[i - 1][j],
-                        ArrayUtils.arrayMax(DP[i], j-6, j - i, MIN_INT) + A[j - 1],
+                        MAXES[i][j] + A[j - 1],
                         DP[i][j - 1] + A[j - 1]);
+                DP[i][j] = val;
+                if (j >= price) {
+                    continue;
+                }
+                for (int j2 = j + 1; j2 <= j + i && j2 <= price; j2++) {
+                    if (val > MAXES[i][j2]) {
+                        MAXES[i][j2] = val;
+                    }
+                }
             }
         }
 
@@ -92,6 +116,7 @@ public class DiceDynamic {
 
     public static void main(String[] args) {
         DiceDynamic dd = new DiceDynamic();
+        Assert.assertEquals(0, dd.solution(new int[]{0}));
         Assert.assertEquals(9, dd.solution(new int[]{9}));
         Assert.assertEquals(19, dd.solution(new int[]{9, 10}));
         Assert.assertEquals(-1, dd.solution(new int[]{9, -10}));
@@ -121,6 +146,15 @@ public class DiceDynamic {
         Assert.assertEquals(-9, dd.solution(new int[]{0, -4, -5, -2, -7, -9}));
         Assert.assertEquals(-3, dd.solution(new int[]{0, -4, -5, -2, -7, -9, -3}));
         Assert.assertEquals(-12, dd.solution(new int[]{0, -4, -5, -2, -7, -9, -3, -10}));
+        Assert.assertEquals(-1, dd.solution(new int[]{0, -4, -5, -2, -7, -9, -3, -10, 1}));
+        Assert.assertEquals(-3, dd.solution(new int[]{0, -4, -5, -2, -7, -9, -3, -10, 1, -2}));
+        Assert.assertEquals(0, dd.solution(new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0}));
+        Assert.assertEquals(-3, dd.solution(new int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1}));
+        Assert.assertEquals(10, dd.solution(new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1}));
+        Assert.assertEquals(1, dd.solution(new int[]{1, -1, -1, -1, -1, -1, -1, -1, -1, 1}));
+        Assert.assertEquals(0, dd.solution(new int[]{1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1}));
+        Assert.assertEquals(-4, dd.solution(new int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}));
+        Assert.assertEquals(-5, dd.solution(new int[]{-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}));
     }
 
     public int solution2(int[] A) {

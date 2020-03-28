@@ -41,14 +41,14 @@ public class ArrayUtils {
     }
 
     public static int arrayMax(int[] A, int ini, int end, int defaultValue) {
-        if (end < ini) {
-            return defaultValue;
-        }
         if (ini < 0) {
             ini = 0;
         }
-        if (end > A.length){
+        if (end > A.length) {
             end = A.length;
+        }
+        if (end < ini) {
+            return defaultValue;
         }
         int retVal = A[ini];
         for (int i = ini + 1; i < end; i++) {
