@@ -104,6 +104,9 @@ public class MinAbsSum {
 
     public int solution(int[] A) {
         int N = A.length;
+        if (N == 0) {
+            return 0;
+        }
         int M = 0;
         int S = 0;
         for (int i = 0; i < N; i++) {
@@ -111,23 +114,29 @@ public class MinAbsSum {
             M = Math.max(A[i], M);
             S += A[i];
         }
-        ArrayList<Boolean> dp = new ArrayList<>();
+        ArrayList<Boolean> SUM_EXISTS = new ArrayList<>();
+        ArrayList<Boolean> REMAINDER = new ArrayList<>();
 
-        dp.add(true);
-
-        for (int k = 1; k <= S; k++) {
-            dp.add(false);
+        for (int k = 0; k <= S; k++) {
+            SUM_EXISTS.add(false);
+            REMAINDER.add(false);
         }
-        for (int j = 0; j < N; j++) {
-            for (int i = S; i >= 0; i--) {
-                if (dp.get(i) && i + A[j] <= S) {
-                    dp.set(i + A[j], true);
+        SUM_EXISTS.set(0, true);
+        SUM_EXISTS.set(A[0], true);
+        REMAINDER.add(S, true);
+        REMAINDER.add(S - A[0], true);
+
+        for (int j = 1; j < N; j++) {
+            for (int i = 0; i <= S; i++) {
+                if (SUM_EXISTS.get(S - i) || REMAINDER.get(i) && (S - i + A[j]) <= S) {
+                    REMAINDER.set(i - A[j], true);
+                    SUM_EXISTS.set(S - i + A[j], true);
                 }
             }
         }
         int result = S;
         for (int i = 0; i < S / 2 + 1; i++) {
-            if (dp.get(i)) {
+            if (SUM_EXISTS.get(i)) {
                 result = Math.min(result, S - 2 * i);
             }
         }
@@ -138,8 +147,9 @@ public class MinAbsSum {
         MinAbsSum mas = new MinAbsSum();
         Assert.assertEquals(0, mas.solution(new int[]{}));
         Assert.assertEquals(1, mas.solution(new int[]{1}));
-        Assert.assertEquals(0, mas.solution(new int[]{1, 5, 2, -2}));
         Assert.assertEquals(100, mas.solution(new int[]{100}));
+        Assert.assertEquals(5, mas.solution(new int[]{-6,5,-6}));
+        Assert.assertEquals(0, mas.solution(new int[]{1, 5, 2, -2}));
         Assert.assertEquals(0, mas.solution(new int[]{100, 100}));
         Assert.assertEquals(100, mas.solution(new int[]{100, 100, -100}));
         Assert.assertEquals(82, mas.solution(new int[]{91, 92, 93, 94, 95, 96, 97}));
