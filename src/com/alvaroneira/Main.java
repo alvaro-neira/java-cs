@@ -18,6 +18,8 @@ public class Main {
          */
         ArrayList<Integer> arrayList = new ArrayList<>();
         arrayList.add(11);
+        arrayList.set(2, 31);
+        arrayList.size();
 //        arrayList.sort();
 
 
