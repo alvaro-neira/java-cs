@@ -1,14 +1,9 @@
 package com.alvaroneira.questions;
 
-import com.alvaroneira.utils.ArrayUtils;
 import org.junit.Assert;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-
-import static com.alvaroneira.utils.ArrayUtils.printMatrix;
 
 /**
 
@@ -100,9 +95,114 @@ public class MinAbsSum {
      *              result = min(result, S - 2 * i)
      *         return result
      *
+     * The time complexity of the above solution is O(N^2  * M), since S = O(N * M).
+     *
+     * 2: Golden solution O(N*M^2)
+     * -------------------
+     * Notice that the range of numbers is quite small (maximum 100). Hence, there must be a lot
+     * of duplicated numbers. Let counti denote the number of occurrences of the value i. We can
+     * improve the previous solution by processing all occurrences of the same value at once. First
+     * we calculate values counti
+     * . Then we create array dp such that:
+     * • dpj = −1 if we cannot get the sum j,
+     * • dpj ­ 0 if we can get sum j.
+     * Initially, dpj = −1 for all of j (except dp0 = 0). Then we scan through all the values appearing
+     * in A; we consider all a such that counta > 0.
+     * For every such a we update dp that dpj denotes how many values a remain (maximally)
+     * after achieving sum j. Note that if the previous value at dpj ­ 0 then we can set dpj = counta
+     * as no value a is needed to obtain the sum j. Otherwise we must obtain sum j − a first and
+     * then use a number a to get sum j. In such a situation dpj = dpj−a − 1.
+     * Using this algorithm, we can mark all the sum values and choose the best one (closest to
+     * half of S).
+     *
+     * def golden_min_abs_sum(A):
+     *     N = len(A)
+     *     M = 0
+     *     for i in xrange(N):
+     *         A[i] = abs(A[i])
+     *         M = max(A[i], M)
+     *     S = sum(A)
+     *     count = [0] * (M + 1)
+     *     for i in xrange(N):
+     *         count[A[i]] += 1
+     *     dp = [-1] * (S + 1)
+     *     dp[0] = 0
+     *     for a in xrange(1, M + 1):
+     *         if count[a] > 0:
+     *             for j in xrange(S):
+     *                 if dp[j] >= 0:
+     *                     dp[j] = count[a]
+     *                 elif (j >= a and dp[j - a] > 0):
+     *                     dp[j] = dp[j - a] - 1
+     *     result = S
+     *     for i in xrange(S // 2 + 1):
+     *         if dp[i] >= 0:
+     *             result = min(result, S - 2 * i)
+     *     return result
+     *
+     * The time complexity of the above solution is O(N*M^2), where M is the maximal element,
+     * since S = O(N · M) and there are at most M different values in A.
      */
 
-    public int solution(int[] A) {
+    public int goldenMinAbsSum(int[] A) {
+        int N = A.length;
+        if (N == 0) {
+            return 0;
+        }
+        int M = 0;
+        int S = 0;
+        for (int i = 0; i < N; i++) {
+            A[i] = Math.abs(A[i]);
+            M = Math.max(A[i], M);
+            S += A[i];
+        }
+
+        int[] count = new int[M + 1];
+        for (int i = 0; i < N; i++) {
+            count[A[i]] += 1;
+        }
+
+        int[] dp = new int[S + 1];
+        for (int k = 1; k <= S; k++) {
+            dp[k] = -1;
+        }
+        for (int a = 1; a <= M; a++) {
+            if (count[a] > 0) {
+                for (int j = 0; j < S; j++) {
+                    if (dp[j] >= 0) {
+                        dp[j] = count[a];
+                    } else if (j >= a && dp[j - a] > 0) {
+                        dp[j] = dp[j - a] - 1;
+                    }
+                }
+            }
+        }
+
+        int result = S;
+        for (int i = 0; i <= S / 2; i++) {
+            if (dp[i] >= 0) {
+                result = Math.min(result, S - 2 * i);
+            }
+        }
+
+        return result;
+    }
+
+    public static void main(String[] args) {
+        MinAbsSum mas = new MinAbsSum();
+        Assert.assertEquals(0, mas.goldenMinAbsSum(new int[]{}));
+        Assert.assertEquals(1, mas.goldenMinAbsSum(new int[]{1}));
+        Assert.assertEquals(100, mas.goldenMinAbsSum(new int[]{100}));
+        Assert.assertEquals(5, mas.goldenMinAbsSum(new int[]{-6, 5, -6}));
+        Assert.assertEquals(0, mas.goldenMinAbsSum(new int[]{1, 5, 2, -2}));
+        Assert.assertEquals(0, mas.goldenMinAbsSum(new int[]{100, 100}));
+        Assert.assertEquals(100, mas.goldenMinAbsSum(new int[]{100, 100, -100}));
+        Assert.assertEquals(82, mas.goldenMinAbsSum(new int[]{91, 92, 93, 94, 95, 96, 97}));
+        Assert.assertEquals(0, mas.goldenMinAbsSum(new int[]{91, 92, 93, 94, 95, 96, 97, 100})); //{1, -1, 1, -1, 1, -1, -1, 1}
+        Assert.assertEquals(58, mas.goldenMinAbsSum(new int[]{91, 91, 92, 92, 92, 93, 93, 93, 94, 94, 94, 95, 95, 95, 96, 96, 96, 97, 97, 97, 91}));
+    }
+
+    public int slowMinAbsSum(int[] A) {
         int N = A.length;
         if (N == 0) {
             return 0;
@@ -138,20 +238,6 @@ public class MinAbsSum {
         return result;
     }
 
-    public static void main(String[] args) {
-        MinAbsSum mas = new MinAbsSum();
-        Assert.assertEquals(0, mas.solution(new int[]{}));
-        Assert.assertEquals(1, mas.solution(new int[]{1}));
-        Assert.assertEquals(100, mas.solution(new int[]{100}));
-        Assert.assertEquals(5, mas.solution(new int[]{-6,5,-6}));
-        Assert.assertEquals(0, mas.solution(new int[]{1, 5, 2, -2}));
-        Assert.assertEquals(0, mas.solution(new int[]{100, 100}));
-        Assert.assertEquals(100, mas.solution(new int[]{100, 100, -100}));
-        Assert.assertEquals(82, mas.solution(new int[]{91, 92, 93, 94, 95, 96, 97}));
-        Assert.assertEquals(0, mas.solution(new int[]{91, 92, 93, 94, 95, 96, 97, 100})); //{1, -1, 1, -1, 1, -1, -1, 1}
-        Assert.assertEquals(58, mas.solution(new int[]{91, 91, 92, 92, 92, 93, 93, 93, 94, 94, 94, 95, 95, 95, 96, 96, 96, 97, 97, 97, 91}));
-    }
-
     public int solution2(int[] A) {
         // write your code in Java SE 8
 
@@ -162,7 +248,7 @@ public class MinAbsSum {
         int maxAbs = Math.abs(A[0]);
         for (int j = 1; j < N; j++) {
             int val = Math.abs(A[j]);
-            if(A[j] > maxAbs){
+            if (A[j] > maxAbs) {
                 maxAbs = val;
             }
         }
@@ -197,7 +283,7 @@ public class MinAbsSum {
         }
     }
 
-    public static void printHashSet(HashSet<Integer> hs){
+    public static void printHashSet(HashSet<Integer> hs) {
         Iterator<Integer> itr = hs.iterator();
         System.out.println();
         while (itr.hasNext()) {
