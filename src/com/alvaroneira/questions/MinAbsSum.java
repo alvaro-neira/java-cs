@@ -114,29 +114,21 @@ public class MinAbsSum {
             M = Math.max(A[i], M);
             S += A[i];
         }
-        ArrayList<Boolean> SUM_EXISTS = new ArrayList<>();
-        ArrayList<Boolean> REMAINDER = new ArrayList<>();
+        HashSet<Integer> SUM_EXISTS = new HashSet<>();
 
-        for (int k = 0; k <= S; k++) {
-            SUM_EXISTS.add(false);
-            REMAINDER.add(false);
-        }
-        SUM_EXISTS.set(0, true);
-        SUM_EXISTS.set(A[0], true);
-        REMAINDER.add(S, true);
-        REMAINDER.add(S - A[0], true);
+        SUM_EXISTS.add(0);
+        SUM_EXISTS.add(A[0]);
 
         for (int j = 1; j < N; j++) {
-            for (int i = 0; i <= S; i++) {
-                if (SUM_EXISTS.get(S - i) || REMAINDER.get(i) && (S - i + A[j]) <= S) {
-                    REMAINDER.set(i - A[j], true);
-                    SUM_EXISTS.set(S - i + A[j], true);
+            for (int i = S; i >= 0; i--) {
+                if (SUM_EXISTS.contains(i) && (i + A[j]) <= S) {
+                    SUM_EXISTS.add(i + A[j]);
                 }
             }
         }
         int result = S;
         for (int i = 0; i < S / 2 + 1; i++) {
-            if (SUM_EXISTS.get(i)) {
+            if (SUM_EXISTS.contains(i)) {
                 result = Math.min(result, S - 2 * i);
             }
         }
