@@ -115,14 +115,19 @@ public class MinAbsSum {
             S += A[i];
         }
         HashSet<Integer> SUM_EXISTS = new HashSet<>();
-
+        HashSet<Integer> REMINDER = new HashSet<>();
         SUM_EXISTS.add(0);
+        REMINDER.add(S);
+
+        //j = 0
         SUM_EXISTS.add(A[0]);
+        REMINDER.add(S-A[0]);
 
         for (int j = 1; j < N; j++) {
-            for (int i = S; i >= 0; i--) {
-                if (SUM_EXISTS.contains(i) && (i + A[j]) <= S) {
-                    SUM_EXISTS.add(i + A[j]);
+            for (int i = 0; i <= S; i++) {
+                if (REMINDER.contains(i) && (S-i + A[j]) <= S) {
+                    SUM_EXISTS.add(S-i + A[j]);
+                    REMINDER.add(i - A[j]);
                 }
             }
         }
