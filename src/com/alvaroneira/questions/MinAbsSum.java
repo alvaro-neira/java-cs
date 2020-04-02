@@ -116,26 +116,24 @@ public class MinAbsSum {
         }
         HashSet<Integer> SUM_EXISTS = new HashSet<>();
         HashSet<Integer> REMINDER = new HashSet<>();
-        SUM_EXISTS.add(0);
         REMINDER.add(S);
 
         //j = 0
-        SUM_EXISTS.add(A[0]);
-        REMINDER.add(S-A[0]);
+        REMINDER.add(S - A[0]);
 
         for (int j = 1; j < N; j++) {
             for (int i = 0; i <= S; i++) {
-                if (REMINDER.contains(i) && (S-i + A[j]) <= S) {
-                    SUM_EXISTS.add(S-i + A[j]);
+                if (REMINDER.contains(i) && (S - i + A[j]) <= S) {
+                    if (S / 2 + A[j] <= i) {
+                        SUM_EXISTS.add(S - i + A[j]);
+                    }
                     REMINDER.add(i - A[j]);
                 }
             }
         }
         int result = S;
-        for (int i = 0; i < S / 2 + 1; i++) {
-            if (SUM_EXISTS.contains(i)) {
-                result = Math.min(result, S - 2 * i);
-            }
+        for (Integer i : SUM_EXISTS) {
+            result = Math.min(result, S - 2 * i);
         }
         return result;
     }
