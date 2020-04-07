@@ -65,12 +65,18 @@ public class MaxNonoverlappingSegments {
         }
         HashSet<Integer> optimalSet = new HashSet();
         optimalSet.add(0);
+        int lastAdded = 0;
         for (int j = 1; j < n; j++) {
-            if (isValid(A, B, optimalSet, j)) {
+            if (!contains(A, B, lastAdded, j)) {
                 optimalSet.add(j);
+                lastAdded = j;
             }
         }
         return optimalSet.size();
+    }
+
+    public static boolean contains(int[] A, int[] B, int i, int j) {
+        return (A[i] <= A[j] && A[j] <= B[i]) || (A[j] <= A[i] && A[i] <= B[j]);
     }
 
     public static boolean isValid(int[] A, int[] B, HashSet<Integer> alreadyValid, int newOne) {
@@ -84,8 +90,19 @@ public class MaxNonoverlappingSegments {
         return true;
     }
 
-    public static boolean contains(int[] A, int[] B, int i, int j) {
-        return (A[i] <= A[j] && A[j] <= B[i]) || (A[j] <= A[i] && A[i] <= B[j]);
+    public int better3(int[] A, int[] B) {
+        int n = A.length;
+        if (n == 0) {
+            return 0;
+        }
+        HashSet<Integer> optimalSet = new HashSet();
+        optimalSet.add(0);
+        for (int j = 1; j < n; j++) {
+            if (isValid(A, B, optimalSet, j)) {
+                optimalSet.add(j);
+            }
+        }
+        return optimalSet.size();
     }
 
     public int better2(int[] A, int[] B) {
