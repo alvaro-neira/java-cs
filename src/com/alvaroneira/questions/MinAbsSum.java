@@ -283,15 +283,6 @@ public class MinAbsSum {
         }
     }
 
-    public static void printHashSet(HashSet<Integer> hs) {
-        Iterator<Integer> itr = hs.iterator();
-        System.out.println();
-        while (itr.hasNext()) {
-            Integer sum = itr.next();
-            System.out.println(sum);
-        }
-    }
-
     public int solution1(int[] A) {
         // write your code in Java SE 8
         int N = A.length;

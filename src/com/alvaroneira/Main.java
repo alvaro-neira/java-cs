@@ -54,6 +54,10 @@ public class Main {
         hashSet.contains("hello");       //O(1)
         hashSet.size();                  //O(1)
         hashSet.remove("hello");      //O(1)
+        Iterator<String> iterator = hashSet.iterator();
+        while(iterator.hasNext()){
+            System.out.println(iterator.next());
+        }
 
         /**
          * BinarySearchTree
