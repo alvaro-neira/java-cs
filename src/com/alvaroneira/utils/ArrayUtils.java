@@ -83,66 +83,57 @@ public class ArrayUtils {
         }
     }
 
-    /**
-     * NOT optimal
-     * For N elements, you should get 2^N subsets, but this produces repetitions,
-     * which are then avoided with a HashSet
-     *
-     * @param set
-     * @param output
-     */
-    public static void enumerateSubsets(HashSet<Integer> set, HashSet<String> output) {
-        if (set.size() == 0) {
-            return;
+    public static void printHashSet(HashSet<Integer> hs) {
+        Iterator<Integer> itr = hs.iterator();
+        while (itr.hasNext()) {
+            Integer sum = itr.next();
+            System.out.print(sum + ",");
         }
-        Iterator<Integer> iterator1 = set.iterator();
-        String str = "";
-        while (iterator1.hasNext()) {
-            Integer elem = iterator1.next();
-            str += elem + ",";
-        }
-        output.add(str);
-        Iterator<Integer> iterator2 = set.iterator();
-        while (iterator2.hasNext()) {
-            Integer elem = iterator2.next();
-            HashSet<Integer> set2 = (HashSet<Integer>) set.clone();
-            set2.remove(elem);
-            enumerateSubsets(set2, output);
-        }
+        System.out.println();
     }
 
+    /**
+     * Lists 2^n - 1 subsets(skips empty set)
+     *
+     * @param A
+     * @return
+     */
     public static int[][] enumerateSubsets(int[] A) {
         int n = A.length;
-        int[][] retVal = new int[(int) Math.pow(2, n) - 1][];
-        HashSet<Integer> set = new HashSet();
-        for (int i = 0; i < A.length; i++) {
-            set.add(A[i]);
+        int size = (int) Math.pow(2, n);
+        int[][] retVal = new int[size][];
+        if (n == 0) {
+            return retVal;
         }
-
-        HashSet<String> output = new HashSet();
-        enumerateSubsets(set, output);
-        Iterator<String> iterator = output.iterator();
-        int j = 0;
-        while (iterator.hasNext()) {
-            retVal[j++] = Arrays.asList(iterator.next().split(","))
-                    .stream()
-                    .map(String::trim)
-                    .mapToInt(Integer::parseInt).toArray();
+        for (Integer i = 1; i <= size; i++) {
+            String str = Integer.toBinaryString(i);
+            int j = 0;
+            int k = 0;
+            retVal[i - 1] = new int[numberOfOnes(str)];
+            while (j < str.length()) {
+                int digit = Integer.parseInt(str.substring(j, j + 1));
+                if (digit != 0) {
+                    retVal[i - 1][k++] = A[j];
+                }
+                j++;
+            }
         }
         return retVal;
     }
 
-    public static void printHashSet(HashSet<Integer> hs) {
-        Iterator<Integer> itr = hs.iterator();
-        System.out.println();
-        while (itr.hasNext()) {
-            Integer sum = itr.next();
-            System.out.println(sum);
+    public static int numberOfOnes(String binaryString) {
+        int retVal = 0;
+        for (int i = 0; i < binaryString.length(); i++) {
+            int digit = Integer.parseInt(binaryString.substring(i, i + 1));
+            if (digit != 0) {
+                retVal++;
+            }
         }
+        return retVal;
     }
 
     public static void main(String[] args) {
-        int[][] subsets = enumerateSubsets(new int[]{0, 1, 2, 3, 4});
+        int[][] subsets = enumerateSubsets(new int[]{0, 1, 2, 3});
         for (int i = 0; i < subsets.length; i++) {
             System.out.println(arr2str(subsets[i]));
         }
