@@ -50,11 +50,45 @@ import java.util.Iterator;
  * A[I] ≤ B[I], for each I (0 ≤ I < N);
  * B[K] ≤ B[K + 1], for each K (0 ≤ K < N − 1).
  *
- * aneira note: if it's sorted at the tail you have to run through the segments from the top!
+ * aneira notes:
+ *  * if it's sorted at the tail you have to run through the segments from the top!
+ *  * CONJECTURE: if the segments are sorted by end, then the max subset of non overlapping segments
+ *                necessarily contains the first element.
+ *                Maybe this is proven somewhere.
  */
 
 public class MaxNonoverlappingSegments {
     public int solution(int[] A, int[] B) {
+        int n = A.length;
+        if (n == 0) {
+            return 0;
+        }
+        HashSet<Integer> optimalSet = new HashSet();
+        optimalSet.add(0);
+        for (int j = 1; j < n; j++) {
+            if (isValid(A, B, optimalSet, j)) {
+                optimalSet.add(j);
+            }
+        }
+        return optimalSet.size();
+    }
+
+    public static boolean isValid(int[] A, int[] B, HashSet<Integer> alreadyValid, int newOne) {
+        Iterator<Integer> iterator1 = alreadyValid.iterator();
+        while (iterator1.hasNext()) {
+            Integer i = iterator1.next();
+            if (contains(A, B, i, newOne)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean contains(int[] A, int[] B, int i, int j) {
+        return (A[i] <= A[j] && A[j] <= B[i]) || (A[j] <= A[i] && A[i] <= B[j]);
+    }
+
+    public int better2(int[] A, int[] B) {
         int n = A.length;
         if (n == 0) {
             return 0;
@@ -73,21 +107,6 @@ public class MaxNonoverlappingSegments {
             }
         }
         return retVal;
-    }
-
-    public static boolean isValid(int[] A, int[] B, HashSet<Integer> alreadyValid, int newOne) {
-        Iterator<Integer> iterator1 = alreadyValid.iterator();
-        while (iterator1.hasNext()) {
-            Integer i = iterator1.next();
-            if (contains(A, B, i, newOne)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean contains(int[] A, int[] B, int i, int j) {
-        return (A[i] <= A[j] && A[j] <= B[i]) || (A[j] <= A[i] && A[i] <= B[j]);
     }
 
     public static boolean isValidSlow(int[] A, int[] B, HashSet<Integer> segments) {
