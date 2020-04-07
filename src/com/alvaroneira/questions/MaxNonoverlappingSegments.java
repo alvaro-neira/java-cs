@@ -63,6 +63,22 @@ public class MaxNonoverlappingSegments {
         if (n == 0) {
             return 0;
         }
+        int optimalSetSize = 1;
+        int lastAdded = 0;
+        for (int j = 1; j < n; j++) {
+            if (A[j] > B[lastAdded]) {
+                optimalSetSize++;
+                lastAdded = j;
+            }
+        }
+        return optimalSetSize;
+    }
+
+    public int optimal(int[] A, int[] B) {
+        int n = A.length;
+        if (n == 0) {
+            return 0;
+        }
         HashSet<Integer> optimalSet = new HashSet();
         optimalSet.add(0);
         int lastAdded = 0;
@@ -105,6 +121,13 @@ public class MaxNonoverlappingSegments {
         return optimalSet.size();
     }
 
+    /**
+     * Here I started using the conjecture
+     *
+     * @param A
+     * @param B
+     * @return
+     */
     public int better2(int[] A, int[] B) {
         int n = A.length;
         if (n == 0) {
