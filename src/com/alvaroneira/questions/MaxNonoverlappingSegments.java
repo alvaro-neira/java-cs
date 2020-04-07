@@ -49,6 +49,8 @@ import java.util.Iterator;
  * each element of arrays A, B is an integer within the range [0..1,000,000,000];
  * A[I] ≤ B[I], for each I (0 ≤ I < N);
  * B[K] ≤ B[K + 1], for each K (0 ≤ K < N − 1).
+ *
+ * aneira note: if it's sorted at the tail you have to run through the segments from the top!
  */
 
 public class MaxNonoverlappingSegments {
@@ -58,19 +60,13 @@ public class MaxNonoverlappingSegments {
             return 0;
         }
         int retVal = 1;
-        for (int i = n - 1; i >= 0; i--) {
+        for (int i = 0; i < n; i++) {
             HashSet<Integer> iSet = new HashSet();
             iSet.add(i);
-            for (int j = n - 1; j >= 0; j--) {
-                if (i == j) {
-                    continue;
-                }
-                iSet.add(j);
-                if (!isValid(A, B, iSet)) {
-                    iSet.remove(j);
-                } else {
+            for (int j = i + 1; j < n; j++) {
+                if (isValid(A, B, iSet, j)) {
+                    iSet.add(j);
                     if (iSet.size() > retVal) {
-//                        ArrayUtils.printHashSet(iSet);
                         retVal = iSet.size();
                     }
                 }
@@ -79,38 +75,22 @@ public class MaxNonoverlappingSegments {
         return retVal;
     }
 
-    public int bruteForce(int[] A, int[] B) {
-        int n = A.length;
-        int[] segments = new int[n];
-        for (int i = 0; i < n; i++) {
-            segments[i] = i;
-        }
-        int[][] enumeration = ArrayUtils.enumerateSubsets(segments);
-        int retVal = 0;
-        for (int i = 0; i < enumeration.length; i++) {
-            int setLength = enumeration[i] != null ? enumeration[i].length : 0;
-            if (setLength > 0 && isValid(A, B, enumeration[i]) && setLength > retVal) {
-                retVal = enumeration[i].length;
-            }
-        }
-        return retVal;
-    }
-
-    public static boolean isValid(int[] A, int[] B, int[] segments) {
-        for (int i = 0; i < segments.length; i++) {
-            for (int j = 0; j < segments.length; j++) {
-                if (i == j) {
-                    continue;
-                }
-                if (contains(A, B, segments[i], segments[j])) {
-                    return false;
-                }
+    public static boolean isValid(int[] A, int[] B, HashSet<Integer> alreadyValid, int newOne) {
+        Iterator<Integer> iterator1 = alreadyValid.iterator();
+        while (iterator1.hasNext()) {
+            Integer i = iterator1.next();
+            if (contains(A, B, i, newOne)) {
+                return false;
             }
         }
         return true;
     }
 
-    public static boolean isValid(int[] A, int[] B, HashSet<Integer> segments) {
+    public static boolean contains(int[] A, int[] B, int i, int j) {
+        return (A[i] <= A[j] && A[j] <= B[i]) || (A[j] <= A[i] && A[i] <= B[j]);
+    }
+
+    public static boolean isValidSlow(int[] A, int[] B, HashSet<Integer> segments) {
         Iterator<Integer> iterator1 = segments.iterator();
         while (iterator1.hasNext()) {
             Integer i = iterator1.next();
@@ -129,21 +109,74 @@ public class MaxNonoverlappingSegments {
         return true;
     }
 
+    public int better1(int[] A, int[] B) {
+        int n = A.length;
+        if (n == 0) {
+            return 0;
+        }
+        int retVal = 1;
+        for (int i = 0; i < n; i++) {
+            HashSet<Integer> iSet = new HashSet();
+            iSet.add(i);
+            for (int j = 0; j < n; j++) {
+                if (i == j) {
+                    continue;
+                }
+                iSet.add(j);
+                if (!isValidSlow(A, B, iSet)) {
+                    iSet.remove(j);
+                } else {
+                    if (iSet.size() > retVal) {
+                        retVal = iSet.size();
+                    }
+                }
+            }
+        }
+        return retVal;
+    }
 
-    public static boolean contains(int[] A, int[] B, int i, int j) {
-        return (A[i] <= A[j] && A[j] <= B[i]) || (A[j] <= A[i] && A[i] <= B[j]);
+    public int bruteForce(int[] A, int[] B) {
+        int n = A.length;
+        int[] segments = new int[n];
+        for (int i = 0; i < n; i++) {
+            segments[i] = i;
+        }
+        int[][] enumeration = ArrayUtils.enumerateSubsets(segments);
+        int retVal = 0;
+        for (int i = 0; i < enumeration.length; i++) {
+            int setLength = enumeration[i] != null ? enumeration[i].length : 0;
+            if (setLength > 0 && isValidSlow(A, B, enumeration[i]) && setLength > retVal) {
+                retVal = enumeration[i].length;
+            }
+        }
+        return retVal;
+    }
+
+    public static boolean isValidSlow(int[] A, int[] B, int[] segments) {
+        for (int i = 0; i < segments.length; i++) {
+            for (int j = 0; j < segments.length; j++) {
+                if (i == j) {
+                    continue;
+                }
+                if (contains(A, B, segments[i], segments[j])) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public static void main(String[] args) {
         MaxNonoverlappingSegments mns = new MaxNonoverlappingSegments();
-        Assert.assertEquals(0, mns.bruteForce(new int[]{}, new int[]{}));
-        Assert.assertEquals(1, mns.bruteForce(new int[]{3}, new int[]{4}));
-        Assert.assertEquals(3, mns.bruteForce(new int[]{1, 3, 7, 9, 9}, new int[]{5, 6, 8, 9, 10}));
-        Assert.assertEquals(1, mns.bruteForce(new int[]{11, 11, 11, 11, 11}, new int[]{13, 13, 13, 13, 13}));
-        Assert.assertEquals(4, mns.bruteForce(new int[]{9, 11, 11, 11, 11, 11, 12, 14}, new int[]{10, 11, 11, 11, 11, 11, 12, 15}));
-        Assert.assertEquals(4, mns.bruteForce(new int[]{11,15,16,19,10}, new int[]{14,15,18,20,21}));
-        Assert.assertEquals(4, mns.bruteForce(new int[]{9,9,9,11,15,16,14,19,10}, new int[]{11,11,11,13,15,18,18,20,21}));
-//        fancyTest(mns, 11, 2);
+        Assert.assertEquals(0, mns.solution(new int[]{}, new int[]{}));
+        Assert.assertEquals(1, mns.solution(new int[]{3}, new int[]{4}));
+        Assert.assertEquals(3, mns.solution(new int[]{1, 3, 7, 9, 9}, new int[]{5, 6, 8, 9, 10}));
+        Assert.assertEquals(1, mns.solution(new int[]{11, 11, 11, 11, 11}, new int[]{13, 13, 13, 13, 13}));
+        Assert.assertEquals(4, mns.solution(new int[]{9, 11, 11, 11, 11, 11, 12, 14}, new int[]{10, 11, 11, 11, 11, 11, 12, 15}));
+        Assert.assertEquals(4, mns.solution(new int[]{11, 15, 16, 19, 10}, new int[]{14, 15, 18, 20, 21}));
+        Assert.assertEquals(4, mns.solution(new int[]{9, 9, 9, 11, 15, 16, 14, 19, 10}, new int[]{11, 11, 11, 13, 15, 18, 18, 20, 21}));
+        Assert.assertEquals(6, mns.solution(new int[]{2, 3, 4, 0, 10, 7, 6, 13, 15, 12, 12, 17, 14, 17, 12, 18,}, new int[]{3, 3, 7, 8, 11, 12, 12, 13, 16, 16, 17, 18, 18, 19, 19, 19})); //0,2,4,7,8,15
+//        fancyTest(mns, 16, 20);
     }
 
     public static void fancyTest(MaxNonoverlappingSegments mns, int n, int max) {
@@ -165,7 +198,6 @@ public class MaxNonoverlappingSegments {
             A[j] = pair.get(0);
             B[j++] = pair.get(1);
         }
-//        Assert.assertEquals(mns.bruteForce(A,B),mns.solution(A,B));
-        System.out.println(mns.bruteForce(A, B));
+        Assert.assertEquals(mns.bruteForce(A, B), mns.solution(A, B));
     }
 }
