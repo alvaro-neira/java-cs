@@ -83,6 +83,21 @@ public class ArrayUtils {
         }
     }
 
+    public static void printArr(int[] arr, int ini, int end) {
+        String retVal = "[";
+        for (int i = 0; i < ini; i++) {
+            retVal += "_,";
+        }
+        for (int i = ini; i < end; i++) {
+            retVal += arr[i] + ",";
+        }
+        for (int i = end; i < arr.length; i++) {
+            retVal += "_,";
+        }
+        retVal = retVal.substring(0, retVal.length() - 1);
+        System.out.println(retVal + "]");
+    }
+
     public static void printHashSet(HashSet<Integer> hs) {
         Iterator<Integer> itr = hs.iterator();
         while (itr.hasNext()) {
