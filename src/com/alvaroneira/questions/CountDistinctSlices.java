@@ -13,9 +13,13 @@ import java.util.HashSet;
  * Count the number of distinct slices (containing only unique numbers).
  *
  * Task description
- * An integer M and a non-empty array A consisting of N non-negative integers are given. All integers in array A are less than or equal to M.
+ * An integer M and a non-empty array A consisting of N non-negative integers are given.
+ * All integers in array A are less than or equal to M.
  *
- * A pair of integers (P, Q), such that 0 ≤ P ≤ Q < N, is called a slice of array A. The slice consists of the elements A[P], A[P + 1], ..., A[Q]. A distinct slice is a slice consisting of only unique numbers. That is, no individual number occurs more than once in the slice.
+ * A pair of integers (P, Q), such that 0 ≤ P ≤ Q < N, is called a slice of array A.
+ * The slice consists of the elements A[P], A[P + 1], ..., A[Q].
+ * A distinct slice is a slice consisting of only unique numbers.
+ * That is, no individual number occurs more than once in the slice.
  *
  * For example, consider integer M = 6 and array A such that:
  *
@@ -56,7 +60,7 @@ public class CountDistinctSlices {
 
     public int solution(int M, int[] A) {
         int N = A.length;
-        int count = 0;
+        long count = 0;
         int tail = 0;
         while (tail < N) {
             HashMap<Integer, Integer> hMap = new HashMap();
@@ -66,9 +70,10 @@ public class CountDistinctSlices {
                 hMap.put(A[head], head);
                 head++;
             }
-            count += (head - tail) * (head - tail + 1) / 2;
+            long diff = head - tail;
+            count += diff * (diff + 1) / 2;
             if (head < N && head - tail > 1 && hMap.containsKey(A[head])) {
-                int diff = head - hMap.get(A[head]) - 1;
+                diff = head - hMap.get(A[head]) - 1;
                 head = hMap.get(A[head]) + 1;
                 count -= (diff) * (diff + 1) / 2;
             }
@@ -77,7 +82,15 @@ public class CountDistinctSlices {
             }
             tail = head;
         }
-        return count;
+        return (int) count;
+    }
+
+    public int largeTest2(int N, int M) {
+        int[] A = new int[N];
+        for (int i = 0; i < N; i++) {
+            A[i] = i;
+        }
+        return solution(M, A);
     }
 
     public static void main(String[] args) {
@@ -111,6 +124,7 @@ public class CountDistinctSlices {
         Assert.assertEquals(19, cds.solution(11, new int[]{9, 2, 2, 2, 2, 1, 2, 13, 13, 13, 13, 13, 9}));
         Assert.assertEquals(12, cds.solution(11, new int[]{2, 1, 0, 0, 1, 2}));
         Assert.assertEquals(16, cds.solution(11, new int[]{1, 2, 3, 4, 5, 5}));
+        Assert.assertEquals(MAX, cds.largeTest2(100000, 100000));
     }
 
     /**
