@@ -1,12 +1,14 @@
 package com.alvaroneira.questions;
 
 import com.alvaroneira.utils.ArrayUtils;
+import com.alvaroneira.utils.NumberUtils;
 import org.junit.Assert;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
 import static com.alvaroneira.utils.ArrayUtils.enumerateSubsetsSizeK;
+import static com.alvaroneira.utils.NumberUtils.numberOfOnes;
 
 /**
  * CountTriangles
@@ -44,8 +46,35 @@ import static com.alvaroneira.utils.ArrayUtils.enumerateSubsetsSizeK;
 
 public class CountTriangles {
     public int solution(int[] A) {
-        // write your code in Java SE 8
-        return bruteForce(A);
+        int n = A.length;
+        if (n < 3) {
+            return 0;
+        }
+        int nAllSubsets = (int) Math.pow(2, n);
+        int retVal = 0;
+        for (Integer i = 0; i <= nAllSubsets; i++) {
+            String str = String.format("%" + n + "s", Integer.toBinaryString(i)).replace(' ', '0');
+            if (numberOfOnes(str) != 3) {
+                continue;
+            }
+            int[] triplet = new int[3];
+            int z = 0;
+            int y = 0;
+            while (z < str.length()) {
+                int digit = Integer.parseInt(str.substring(z, z + 1));
+                if (digit != 0) {
+                    triplet[y++] = A[z];
+                }
+                z++;
+            }
+            int P = triplet[0];
+            int Q = triplet[1];
+            int R = triplet[2];
+            if (P + Q > R && Q + R > P && R + P > Q) {
+                retVal++;
+            }
+        }
+        return retVal;
     }
 
     public int bruteForce(int[] A) {
