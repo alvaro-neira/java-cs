@@ -3,6 +3,8 @@ package com.alvaroneira.utils;
 import java.util.*;
 import java.util.stream.IntStream;
 
+import static com.alvaroneira.utils.NumberUtils.numberOfOnes;
+
 /**
  * Created by aneira on 3/18/17.
  */
@@ -83,6 +85,10 @@ public class ArrayUtils {
         }
     }
 
+    public static void printArr(int[] arr) {
+        printArr(arr, 0, arr.length);
+    }
+
     public static void printArr(int[] arr, int ini, int end) {
         String retVal = "[";
         for (int i = 0; i < ini; i++) {
@@ -121,7 +127,7 @@ public class ArrayUtils {
             return retVal;
         }
         for (Integer i = 1; i <= size; i++) {
-            String str = Integer.toBinaryString(i);
+            String str = String.format("%" + n + "s", Integer.toBinaryString(i)).replace(' ', '0');
             int j = 0;
             int k = 0;
             retVal[i - 1] = new int[numberOfOnes(str)];
@@ -136,19 +142,38 @@ public class ArrayUtils {
         return retVal;
     }
 
-    public static int numberOfOnes(String binaryString) {
-        int retVal = 0;
-        for (int i = 0; i < binaryString.length(); i++) {
-            int digit = Integer.parseInt(binaryString.substring(i, i + 1));
-            if (digit != 0) {
-                retVal++;
+    public static int[][] enumerateSubsetsSizeK(int[] A, int k) {
+        int n = A.length;
+        int nAllSubsets = (int) Math.pow(2, n);
+        int size = (int) NumberUtils.binomial(n, k);
+        int[][] retVal = new int[size][];
+        if (n == 0) {
+            return retVal;
+        }
+        int j = 0;
+        for (Integer i = 0; i <= nAllSubsets; i++) {
+            String str = String.format("%" + n + "s", Integer.toBinaryString(i)).replace(' ', '0');
+            if (numberOfOnes(str) != k) {
+                continue;
             }
+            retVal[j] = new int[k];
+            int z = 0;
+            int y = 0;
+            while (z < str.length()) {
+                int digit = Integer.parseInt(str.substring(z, z + 1));
+                if (digit != 0) {
+                    retVal[j][y++] = A[z];
+                }
+                z++;
+            }
+            j++;
         }
         return retVal;
     }
 
     public static void main(String[] args) {
-        int[][] subsets = enumerateSubsets(new int[]{0, 1, 2, 3});
+        int[][] subsets = enumerateSubsetsSizeK(new int[]{0, 1, 2, 3}, 3);
+//        int[][] subsets = enumerateSubsets(new int[]{0, 1, 2, 3});
         for (int i = 0; i < subsets.length; i++) {
             System.out.println(arr2str(subsets[i]));
         }

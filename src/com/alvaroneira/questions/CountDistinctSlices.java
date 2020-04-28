@@ -3,6 +3,7 @@ package com.alvaroneira.questions;
 import com.alvaroneira.utils.ArrayUtils;
 import org.junit.Assert;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -58,7 +59,53 @@ import java.util.HashSet;
 public class CountDistinctSlices {
     public static int MAX = 1000000000;
 
+    /**
+     * http://chienchikao.blogspot.com/2017/12/codility-lesson-15-caterpillar-method-3.html
+     *
+     * @param M
+     * @param A
+     * @return
+     */
     public int solution(int M, int[] A) {
+        // This solution is more clever, and much faster O(n)
+
+        // main idea:
+        // use "boolean[]" to record if an integer is already seen
+        // also use "tail" and "head"
+        int N = A.length;
+        boolean[] seen = new boolean[M + 1]; // from 0 to M
+        // Arrays.fill(seen, false); // note: "false" by default
+
+        int tail = 0;
+        int head = 0;
+        int count = 0;
+
+        // key point: move the "tail" and "head" of a slice
+        while (tail < N && head < N) {
+            // case 1: distinct (head)
+            if (seen[A[head]] == false) {
+                // note: not just +1
+                // there could be (head - tail + 1) combinations (be careful)
+                count = count + (head - tail + 1);
+                if (count >= MAX) {
+                    return MAX;
+                }
+
+                // increase the slice to right by "1" (important)
+                seen[A[head]] = true;
+                head++;
+            } else { // case 2: not distinct
+                // decrease the slice from left by "1" (important)
+                // remove A[tail] from "seen" (be careful)
+                seen[A[tail]] = false;
+                tail++;
+            }
+        }
+
+        return count;
+    }
+
+    public int solution3(int M, int[] A) {
         int N = A.length;
         long count = 0;
         int tail = 0;
@@ -96,34 +143,34 @@ public class CountDistinctSlices {
     public static void main(String[] args) {
         CountDistinctSlices cds = new CountDistinctSlices();
         Assert.assertEquals(5, cds.solution(11, new int[]{2, 3, 2}));
-        Assert.assertEquals(19, cds.solution(11, new int[]{9, 2, 2, 2, 2, 1, 2, 13, 13, 13, 13, 13, 9}));
-        Assert.assertEquals(6, cds.solution(11, new int[]{2, 1, 2, 2}));
-        Assert.assertEquals(7, cds.solution(11, new int[]{2, 1, 2, 1}));
-        Assert.assertEquals(12, cds.solution(11, new int[]{2, 1, 0, 2, 1}));
-        Assert.assertEquals(11, cds.solution(11, new int[]{2, 1, 0, 1, 2}));
-        Assert.assertEquals(12, cds.solution(11, new int[]{2, 1, 0, 2, 1}));
-        Assert.assertEquals(21, cds.solution(11, new int[]{5, 1, 2, 3, 4, 5, 5}));
-        Assert.assertEquals(24, cds.solution(11, new int[]{3, 2, 1, 0, 1, 2, 3, 4}));
-        Assert.assertEquals(1, cds.solution(11, new int[]{3}));
-        Assert.assertEquals(3, cds.solution(11, new int[]{2, 3}));
-        Assert.assertEquals(4, cds.solution(11, new int[]{2, 3, 3}));
-        Assert.assertEquals(4, cds.solution(11, new int[]{2, 2, 3}));
-        Assert.assertEquals(15, cds.solution(11, new int[]{1, 2, 3, 4, 5}));
-        Assert.assertEquals(5, cds.solution(11, new int[]{13, 13, 13, 13, 13}));
-        Assert.assertEquals(9, cds.solution(11, new int[]{3, 4, 5, 5, 2}));
-        Assert.assertEquals(7, cds.solution(11, new int[]{2, 13, 13, 13, 13, 13}));
-        Assert.assertEquals(7, cds.solution(11, new int[]{13, 13, 13, 13, 13, 2}));
-        Assert.assertEquals(9, cds.solution(11, new int[]{2, 13, 13, 13, 13, 13, 2}));
-        Assert.assertEquals(10, cds.solution(11, new int[]{2, 2, 2, 2, 13, 13, 13, 13, 13}));
-        Assert.assertEquals(15, cds.solution(11, new int[]{2, 2, 2, 2, 1, 1, 1, 1, 13, 13, 13, 13, 13}));
-        Assert.assertEquals(8, cds.solution(11, new int[]{11, 11, 22, 22, 33, 33}));
-        Assert.assertEquals(13, cds.solution(11, new int[]{2, 2, 2, 2, 1, 13, 13, 13, 13, 13}));
-        Assert.assertEquals(15, cds.solution(11, new int[]{2, 2, 2, 2, 1, 13, 13, 13, 13, 13, 9}));
-        Assert.assertEquals(17, cds.solution(11, new int[]{9, 2, 2, 2, 2, 1, 13, 13, 13, 13, 13, 9}));
-        Assert.assertEquals(15, cds.solution(11, new int[]{1, 2, 3, 4, 5}));
-        Assert.assertEquals(19, cds.solution(11, new int[]{9, 2, 2, 2, 2, 1, 2, 13, 13, 13, 13, 13, 9}));
-        Assert.assertEquals(12, cds.solution(11, new int[]{2, 1, 0, 0, 1, 2}));
-        Assert.assertEquals(16, cds.solution(11, new int[]{1, 2, 3, 4, 5, 5}));
+        Assert.assertEquals(19, cds.solution(100000, new int[]{9, 2, 2, 2, 2, 1, 2, 13, 13, 13, 13, 13, 9}));
+        Assert.assertEquals(6, cds.solution(100000, new int[]{2, 1, 2, 2}));
+        Assert.assertEquals(7, cds.solution(100000, new int[]{2, 1, 2, 1}));
+        Assert.assertEquals(12, cds.solution(100000, new int[]{2, 1, 0, 2, 1}));
+        Assert.assertEquals(11, cds.solution(100000, new int[]{2, 1, 0, 1, 2}));
+        Assert.assertEquals(12, cds.solution(100000, new int[]{2, 1, 0, 2, 1}));
+        Assert.assertEquals(21, cds.solution(100000, new int[]{5, 1, 2, 3, 4, 5, 5}));
+        Assert.assertEquals(24, cds.solution(100000, new int[]{3, 2, 1, 0, 1, 2, 3, 4}));
+        Assert.assertEquals(1, cds.solution(100000, new int[]{3}));
+        Assert.assertEquals(3, cds.solution(100000, new int[]{2, 3}));
+        Assert.assertEquals(4, cds.solution(100000, new int[]{2, 3, 3}));
+        Assert.assertEquals(4, cds.solution(100000, new int[]{2, 2, 3}));
+        Assert.assertEquals(15, cds.solution(100000, new int[]{1, 2, 3, 4, 5}));
+        Assert.assertEquals(5, cds.solution(100000, new int[]{13, 13, 13, 13, 13}));
+        Assert.assertEquals(9, cds.solution(100000, new int[]{3, 4, 5, 5, 2}));
+        Assert.assertEquals(7, cds.solution(100000, new int[]{2, 13, 13, 13, 13, 13}));
+        Assert.assertEquals(7, cds.solution(100000, new int[]{13, 13, 13, 13, 13, 2}));
+        Assert.assertEquals(9, cds.solution(100000, new int[]{2, 13, 13, 13, 13, 13, 2}));
+        Assert.assertEquals(10, cds.solution(100000, new int[]{2, 2, 2, 2, 13, 13, 13, 13, 13}));
+        Assert.assertEquals(15, cds.solution(100000, new int[]{2, 2, 2, 2, 1, 1, 1, 1, 13, 13, 13, 13, 13}));
+        Assert.assertEquals(8, cds.solution(100000, new int[]{11, 11, 22, 22, 33, 33}));
+        Assert.assertEquals(13, cds.solution(100000, new int[]{2, 2, 2, 2, 1, 13, 13, 13, 13, 13}));
+        Assert.assertEquals(15, cds.solution(100000, new int[]{2, 2, 2, 2, 1, 13, 13, 13, 13, 13, 9}));
+        Assert.assertEquals(17, cds.solution(100000, new int[]{9, 2, 2, 2, 2, 1, 13, 13, 13, 13, 13, 9}));
+        Assert.assertEquals(15, cds.solution(100000, new int[]{1, 2, 3, 4, 5}));
+        Assert.assertEquals(19, cds.solution(100000, new int[]{9, 2, 2, 2, 2, 1, 2, 13, 13, 13, 13, 13, 9}));
+        Assert.assertEquals(12, cds.solution(100000, new int[]{2, 1, 0, 0, 1, 2}));
+        Assert.assertEquals(16, cds.solution(100000, new int[]{1, 2, 3, 4, 5, 5}));
         Assert.assertEquals(MAX, cds.largeTest2(100000, 100000));
     }
 
