@@ -4,10 +4,13 @@ import com.alvaroneira.utils.ArrayUtils;
 import com.alvaroneira.utils.NumberUtils;
 import org.junit.Assert;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 
 import static com.alvaroneira.utils.ArrayUtils.enumerateSubsetsSizeK;
+import static com.alvaroneira.utils.ArrayUtils.printArr;
 import static com.alvaroneira.utils.NumberUtils.numberOfOnes;
 
 /**
@@ -45,7 +48,47 @@ import static com.alvaroneira.utils.NumberUtils.numberOfOnes;
  */
 
 public class CountTriangles {
-    public int solution(int[] A) {
+    public static final int MAXINT = 1000000000;
+
+    public int solution(int[] origA) {
+        Integer[] A = Arrays.stream(origA).boxed().toArray(Integer[]::new);
+        int n = A.length;
+        if (n < 3) {
+            return 0;
+        }
+        Arrays.sort(A, Collections.reverseOrder());
+        int retVal = 0;
+        for (int i = 0; i < n - 2; i++) {
+            for (int tail = i + 1; tail < n - 1; tail++) {
+                for (int head = tail + 1; head < n; head++) {
+                    if (A[i] < A[tail] + A[head]) {
+                        retVal++;
+                    }
+                }
+            }
+        }
+        return retVal;
+    }
+
+    public static void main(String[] args) {
+        CountTriangles ct = new CountTriangles();
+        Assert.assertEquals(0, ct.solution(new int[]{}));
+        Assert.assertEquals(0, ct.solution(new int[]{3}));
+        Assert.assertEquals(0, ct.solution(new int[]{3, 4}));
+        Assert.assertEquals(1, ct.solution(new int[]{3, 4, 5}));
+        Assert.assertEquals(1, ct.solution(new int[]{5, 3, 3}));
+        Assert.assertEquals(4, ct.solution(new int[]{3, 4, 5, 6}));
+        Assert.assertEquals(4, ct.solution(new int[]{10, 2, 5, 1, 8, 12}));
+        Assert.assertEquals(525, ct.solution(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}));
+        Assert.assertEquals(1925, ct.solution(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30}));
+        Assert.assertEquals(0, ct.solution(new int[]{MAXINT}));
+        Assert.assertEquals(1, ct.solution(new int[]{MAXINT, MAXINT, MAXINT}));
+        Assert.assertEquals(1, ct.solution(new int[]{1, 1, 1}));
+        Assert.assertEquals(0, ct.solution(new int[]{1, 1, 2}));
+        Assert.assertEquals(3, ct.solution(new int[]{3, 3, 5, 6}));
+    }
+
+    public int solution2(int[] A) {
         int n = A.length;
         if (n < 3) {
             return 0;
@@ -96,15 +139,4 @@ public class CountTriangles {
         return retVal;
     }
 
-    public static void main(String[] args) {
-        CountTriangles ct = new CountTriangles();
-        Assert.assertEquals(0, ct.solution(new int[]{}));
-        Assert.assertEquals(0, ct.solution(new int[]{3}));
-        Assert.assertEquals(0, ct.solution(new int[]{3, 4}));
-        Assert.assertEquals(1, ct.solution(new int[]{3, 4, 5}));
-        Assert.assertEquals(4, ct.solution(new int[]{3, 4, 5, 6}));
-        Assert.assertEquals(4, ct.solution(new int[]{10, 2, 5, 1, 8, 12}));
-        Assert.assertEquals(525, ct.solution(new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}));
-//        Assert.assertEquals(525, ct.solution(new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30}));
-    }
 }
