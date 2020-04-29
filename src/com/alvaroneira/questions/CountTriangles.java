@@ -50,24 +50,34 @@ import static com.alvaroneira.utils.NumberUtils.numberOfOnes;
 public class CountTriangles {
     public static final int MAXINT = 1000000000;
 
-    public int solution(int[] origA) {
-        Integer[] A = Arrays.stream(origA).boxed().toArray(Integer[]::new);
-        int n = A.length;
-        if (n < 3) {
-            return 0;
-        }
-        Arrays.sort(A, Collections.reverseOrder());
-        int retVal = 0;
-        for (int i = 0; i < n - 2; i++) {
-            for (int tail = i + 1; tail < n - 1; tail++) {
-                for (int head = tail + 1; head < n; head++) {
-                    if (A[i] < A[tail] + A[head]) {
-                        retVal++;
-                    }
+    /**
+     * https://www.martinkysel.com/codility-counttriangles-solution/
+     * O(n^2)
+     *
+     * @param A
+     * @return
+     */
+    public int solution(int[] A) {
+        Arrays.sort(A);
+        int triangle_cnt = 0;
+
+        for (int P_idx = 0; P_idx < A.length - 2; P_idx++) {
+            int Q_idx = P_idx + 1;
+            int R_idx = P_idx + 2;
+            while (R_idx < A.length) {
+                if (A[P_idx] + A[Q_idx] > A[R_idx]) {
+                    triangle_cnt += R_idx - Q_idx;
+                    R_idx += 1;
+                } else if (Q_idx < R_idx - 1) {
+                    Q_idx += 1;
+                } else {
+                    R_idx += 1;
+                    Q_idx += 1;
                 }
             }
         }
-        return retVal;
+
+        return triangle_cnt;
     }
 
     public static void main(String[] args) {
@@ -86,6 +96,46 @@ public class CountTriangles {
         Assert.assertEquals(1, ct.solution(new int[]{1, 1, 1}));
         Assert.assertEquals(0, ct.solution(new int[]{1, 1, 2}));
         Assert.assertEquals(3, ct.solution(new int[]{3, 3, 5, 6}));
+    }
+
+    public int solutionOn3LittleBetter(int[] origA) {
+        Integer[] A = Arrays.stream(origA).boxed().toArray(Integer[]::new);
+        int n = A.length;
+        if (n < 3) {
+            return 0;
+        }
+        Arrays.sort(A, Collections.reverseOrder());
+        int retVal = 0;
+        for (int base = 0; base < n - 2; base++) {
+            for (int tail = base + 1; tail < n - 1; tail++) {
+                int head = n - 1;
+                while (A[base] >= A[tail] + A[head] && head >= tail + 1 && tail >= base + 1) {
+                    head--;
+                }
+                retVal += (head - tail);
+            }
+        }
+        return retVal;
+    }
+
+    public int solutionOn3(int[] origA) {
+        Integer[] A = Arrays.stream(origA).boxed().toArray(Integer[]::new);
+        int n = A.length;
+        if (n < 3) {
+            return 0;
+        }
+        Arrays.sort(A, Collections.reverseOrder());
+        int retVal = 0;
+        for (int i = 0; i < n - 2; i++) {
+            for (int tail = i + 1; tail < n - 1; tail++) {
+                for (int head = tail + 1; head < n; head++) {
+                    if (A[i] < A[tail] + A[head]) {
+                        retVal++;
+                    }
+                }
+            }
+        }
+        return retVal;
     }
 
     public int solution2(int[] A) {
