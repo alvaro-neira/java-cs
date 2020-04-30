@@ -14,7 +14,7 @@ import static com.alvaroneira.utils.ArrayUtils.printArr;
 /**
  *  MinAbsSumOfTwo
  * Find the minimal absolute value of a sum of two elements.
- * 
+ *
  * Task description
  * Let A be a non-empty array consisting of N integers.
  *
@@ -60,7 +60,7 @@ import static com.alvaroneira.utils.ArrayUtils.printArr;
  * each element of array A is an integer within the range [−1,000,000,000..1,000,000,000].
  */
 public class MinAbsSumOfTwo {
-    public static final int MAXINT = 1000;
+    public static final int MAXINT = 1000000000;
 
     public int solution(int[] A) {
         int n = A.length;
@@ -68,34 +68,23 @@ public class MinAbsSumOfTwo {
         int headPos = n - 1;
         int tailPos = 0;
         int minVal = Math.abs(A[tailPos] + A[headPos]);
-        /**
-         * Begin
-         */
-        if (headPos > tailPos + 1) {
-            if (Math.abs(A[tailPos + 1] + A[headPos]) < Math.abs(A[tailPos] + A[headPos - 1])) {
-                tailPos++;
-            } else {
-                headPos--;
-            }
-        }
-        /**
-         * Loop
-         */
+        int currVal = minVal;
         while (tailPos + 1 < headPos) {
-            if (Math.abs(A[tailPos] + A[headPos]) < minVal) {
-                minVal = Math.abs(A[tailPos] + A[headPos]);
-            }
-            if (Math.abs(A[tailPos + 1] + A[headPos]) < Math.abs(A[tailPos] + A[headPos - 1])) {
+            int shrinkTail = Math.abs(A[tailPos + 1] + A[headPos]);
+            int shrinkHead = Math.abs(A[tailPos] + A[headPos - 1]);
+            if (shrinkTail < shrinkHead) {
+                currVal = shrinkTail;
                 tailPos++;
             } else {
+                currVal = shrinkHead;
                 headPos--;
+            }
+            if (currVal < minVal) {
+                minVal = currVal;
             }
         }
 
-        /**
-         * End
-         */
-        minVal = NumberUtils.java8min(minVal,
+        minVal = NumberUtils.java8min(currVal, minVal,
                 Math.abs(A[headPos] + A[headPos]),
                 Math.abs(A[headPos] + A[tailPos]),
                 Math.abs(A[tailPos] + A[tailPos]));
