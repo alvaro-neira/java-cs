@@ -2,6 +2,10 @@ package com.alvaroneira.utils;
 
 import com.google.common.math.IntMath;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.NoSuchElementException;
+
 public class NumberUtils {
     public static long binomial(int n, int k) {
         return IntMath.binomial(n, k);
@@ -19,6 +23,22 @@ public class NumberUtils {
 //        }
 //        return n * factorial(n - 1);
 //    }
+
+    public static int java8max(Integer... args) {
+        List<Integer> listOfIntegers = Arrays.asList(args);
+        return listOfIntegers
+                .stream()
+                .mapToInt(v -> v)
+                .max().orElseThrow(NoSuchElementException::new);
+    }
+
+    public static int java8min(Integer... args) {
+        List<Integer> listOfIntegers = Arrays.asList(args);
+        return listOfIntegers
+                .stream()
+                .mapToInt(v -> v)
+                .min().orElseThrow(NoSuchElementException::new);
+    }
 
     public static int numberOfOnes(String binaryString) {
         int retVal = 0;

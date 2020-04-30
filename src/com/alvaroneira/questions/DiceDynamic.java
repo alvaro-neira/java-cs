@@ -1,6 +1,7 @@
 package com.alvaroneira.questions;
 
 import com.alvaroneira.utils.ArrayUtils;
+import com.alvaroneira.utils.NumberUtils;
 import org.junit.Assert;
 
 import static com.alvaroneira.utils.ArrayUtils.printMatrix;
@@ -173,7 +174,7 @@ public class DiceDynamic {
 
         for (i = 1; i <= n; i++) {
             for (j = 1; j <= price; j++) {
-                DP[i][j] = ArrayUtils.java8max(
+                DP[i][j] = NumberUtils.java8max(
                         DP[i - 1][j],
                         (j > i ? DP[i][j - i] + A[j - 1] : MIN_INT),
                         DP[i][j - 1] + A[j - 1]);
@@ -220,7 +221,7 @@ public class DiceDynamic {
 //        }
         for (i = 2; i <= n; i++) {
             for(j=2;j<=price;j++){
-                DP[i][j] = ArrayUtils.java8max(
+                DP[i][j] = NumberUtils.java8max(
                         DP[i-1][j],
                         DP[1][j] - ArrayUtils.sum(A,Math.max(1,j-i),j-1),
                         DP[i][j-1]+A[j-1]);
@@ -243,7 +244,7 @@ public class DiceDynamic {
             return Math.max(fullSum,fullSum-A[1]);
         }
         if(price==4){
-            return ArrayUtils.java8max(fullSum,fullSum-A[1],fullSum-A[2]);
+            return NumberUtils.java8max(fullSum,fullSum-A[1],fullSum-A[2]);
         }
         int[] denominations=new int[]{1,2,3,4,5,6};
 

@@ -67,14 +67,6 @@ public class ArrayUtils {
         return IntStream.of(A).reduce(0, (a, b) -> a + b);
     }
 
-    public static int java8max(Integer... args) {
-        List<Integer> listOfIntegers = Arrays.asList(args);
-        return listOfIntegers
-                .stream()
-                .mapToInt(v -> v)
-                .max().orElseThrow(NoSuchElementException::new);
-    }
-
     public static void printMatrix(int[][] M) {
         int i, j;
         for (i = 0; i < M.length; i++) {

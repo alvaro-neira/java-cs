@@ -51,13 +51,36 @@ public class CountTriangles {
     public static final int MAXINT = 1000000000;
 
     /**
-     * https://www.martinkysel.com/codility-counttriangles-solution/
+     * https://codesays.com/2014/solution-to-count-triangles-by-codility/
      * O(n^2)
      *
      * @param A
      * @return
      */
     public int solution(int[] A) {
+        int n = A.length;
+        int result = 0;
+        Arrays.sort(A);
+        for (int first = 0; first < n - 2; first++) {
+            int third = first + 2;
+            for (int second = first + 1; second < n - 1; second++) {
+                while (third < n && A[first] + A[second] > A[third]) {
+                    third += 1;
+                }
+                result += third - second - 1;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * https://www.martinkysel.com/codility-counttriangles-solution/
+     * O(n^2)
+     *
+     * @param A
+     * @return
+     */
+    public int solutionKysel(int[] A) {
         Arrays.sort(A);
         int triangle_cnt = 0;
 
