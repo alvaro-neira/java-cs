@@ -1,13 +1,9 @@
 package com.alvaroneira.questions;
 
-import com.alvaroneira.utils.ArrayUtils;
 import com.alvaroneira.utils.NumberUtils;
 import org.junit.Assert;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
 
 import static com.alvaroneira.utils.ArrayUtils.printArr;
 
@@ -90,6 +86,31 @@ public class MinAbsSumOfTwo {
                 Math.abs(A[tailPos] + A[tailPos]));
 
         return minVal;
+    }
+
+    /**
+     * https://github.com/ZRonchy/Codility/blob/master/Lesson13/MinAbsSumOfTwo.java
+     * 100% in everything
+     * @param A
+     * @return
+     */
+    public int solutionZRonchy(int[] A) {
+        int N = A.length;
+        Arrays.sort(A);
+        int tail = 0;
+        int head = N - 1;
+        int minAbsSum = Math.abs(A[tail] + A[head]);
+        while (tail <= head) {
+            int currentSum = A[tail] + A[head];
+            minAbsSum = Math.min(minAbsSum, Math.abs(currentSum));
+            // If the sum has become
+            // positive, we should know that the head can be moved left
+            if (currentSum <= 0)
+                tail++;
+            else
+                head--;
+        }
+        return minAbsSum;
     }
 
     public int bruteForce(int[] A) {

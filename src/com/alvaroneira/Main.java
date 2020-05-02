@@ -18,7 +18,7 @@ public class Main {
          */
         ArrayList<Integer> arrayList = new ArrayList<>();
         arrayList.add(11);
-        arrayList.set(2, 31);
+//        arrayList.set(2, 31);
         arrayList.size();
 //        arrayList.sort();
 
@@ -46,6 +46,21 @@ public class Main {
         hashMap.containsKey("key1");//O(1)
         hashMap.get("key1");//O(1)
 
+        HashMap<Integer, Integer> hm = new HashMap<>();
+        hm.put(30, 1);
+        hm.put(20, 1);
+        hm.put(10, 1);
+//        for (Integer key : hm.keySet()) {
+//            System.out.println(key);
+//        }
+
+        Iterator it = hm.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            System.out.println(pair.getKey() + " = " + pair.getValue());
+            it.remove(); // avoids a ConcurrentModificationException
+        }
+
         /**
          * HashSet
          */
@@ -55,8 +70,17 @@ public class Main {
         hashSet.size();                  //O(1)
         hashSet.remove("hello");      //O(1)
         Iterator<String> iterator = hashSet.iterator();
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             System.out.println(iterator.next());
+            //hasSet.remove() can lead to a ConcurrentModificationException
+        }
+
+        //To remove use this:
+        for (Iterator<String> iter = hashSet.iterator(); it.hasNext(); ) {
+            String str = iter.next();
+            if (str.compareTo("any condition") == 0) {
+                iter.remove();
+            }
         }
 
         /**
