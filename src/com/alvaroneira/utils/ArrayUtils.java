@@ -113,6 +113,23 @@ public class ArrayUtils {
         System.out.println(retVal + "]");
     }
 
+    public static void printArr(Object[] arr) {
+        int ini=0;
+        int end=arr.length;
+        String retVal = "[";
+        for (int i = 0; i < ini; i++) {
+            retVal += "_,";
+        }
+        for (int i = ini; i < end; i++) {
+            retVal += arr[i] + ",";
+        }
+        for (int i = end; i < arr.length; i++) {
+            retVal += "_,";
+        }
+        retVal = retVal.substring(0, retVal.length() - 1);
+        System.out.println(retVal + "]");
+    }
+
     public static void printHashSet(HashSet<Integer> hs) {
         Iterator<Integer> itr = hs.iterator();
         while (itr.hasNext()) {
