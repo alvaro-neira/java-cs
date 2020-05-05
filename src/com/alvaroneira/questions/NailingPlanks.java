@@ -1,12 +1,10 @@
 package com.alvaroneira.questions;
 
 import com.alvaroneira.algorithms.MergeSort;
-import com.alvaroneira.utils.ArrayUtils;
 import org.junit.Assert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 
 import static com.alvaroneira.utils.ArrayUtils.printArr;
 
@@ -15,13 +13,18 @@ import static com.alvaroneira.utils.ArrayUtils.printArr;
  * Count the minimum number of nails that allow a series of planks to be nailed.
  *
  * Task description
- * You are given two non-empty arrays A and B consisting of N integers. These arrays represent N planks. More precisely, A[K] is the start and B[K] the end of the K−th plank.
+ * You are given two non-empty arrays A and B consisting of N integers. These arrays represent N planks.
+ * More precisely, A[K] is the start and B[K] the end of the K−th plank.
  *
- * Next, you are given a non-empty array C consisting of M integers. This array represents M nails. More precisely, C[I] is the position where you can hammer in the I−th nail.
+ * Next, you are given a non-empty array C consisting of M integers. This array represents M nails. More precisely,
+ * C[I] is the position where you can hammer in the I−th nail.
  *
  * We say that a plank (A[K], B[K]) is nailed if there exists a nail C[I] such that A[K] ≤ C[I] ≤ B[K].
  *
- * The goal is to find the minimum number of nails that must be used until all the planks are nailed. In other words, you should find a value J such that all planks will be nailed after using only the first J nails. More precisely, for every plank (A[K], B[K]) such that 0 ≤ K < N, there should exist a nail C[I] such that I < J and A[K] ≤ C[I] ≤ B[K].
+ * The goal is to find the minimum number of nails that must be used until all the planks are nailed. In other words,
+ * you should find a value J such that all planks will be nailed after using only the first J nails. More precisely,
+ * for every plank (A[K], B[K]) such that 0 ≤ K < N, there should exist a nail C[I] such that
+ * I < J and A[K] ≤ C[I] ≤ B[K].
  *
  * For example, given arrays A, B such that:
  *
@@ -50,7 +53,8 @@ import static com.alvaroneira.utils.ArrayUtils.printArr;
  *
  * class Solution { public int solution(int[] A, int[] B, int[] C); }
  *
- * that, given two non-empty arrays A and B consisting of N integers and a non-empty array C consisting of M integers, returns the minimum number of nails that, used sequentially, allow all the planks to be nailed.
+ * that, given two non-empty arrays A and B consisting of N integers and a non-empty array C consisting of M integers,
+ * returns the minimum number of nails that, used sequentially, allow all the planks to be nailed.
  *
  * If it is not possible to nail all the planks, the function should return −1.
  *
@@ -76,13 +80,17 @@ import static com.alvaroneira.utils.ArrayUtils.printArr;
  */
 
 public class NailingPlanks {
-    public class Pair {
+    public class Pair implements Comparable<Pair>{
         public int ini;
         public int end;
 
         public Pair(int ini, int end) {
             this.ini = ini;
             this.end = end;
+        }
+
+        public int compareTo(Pair other){
+            return this.end - other.end;
         }
     }
 
@@ -94,13 +102,12 @@ public class NailingPlanks {
         int result = -1;
         int mid = 0;
         Integer[] nailsA = new Integer[0];
-        Pair[] planksA = new Pair[n];
-        Pair[] planksB = new Pair[n];
+        ArrayList<Pair> planksA = new ArrayList<Pair>();
+        ArrayList<Pair> planksB = new ArrayList<Pair>();
         int nPlanksA = 0;
-        int nPlanksB = 0;
         int lastNailsPivot = 0;
-        MergeSort<Integer> integerSort = MergeSort.of(Integer.class, 1);
-        MergeSort<Pair> pairSort = MergeSort.of(Pair.class, new Pair(1, 2));
+        MergeSort<Integer> integerSort = new MergeSort(Integer.class, new Integer(10));
+        MergeSort<Pair> pairSort = new MergeSort(Pair.class, new Pair(1, 2));
         while (beg <= end) {
             int oldMid = mid;
             mid = (beg + end) / 2;
@@ -122,38 +129,40 @@ public class NailingPlanks {
                 integerSort.sort(nailsA);
             }
             int nailsPivot = nailsA[mid - 1];
+            int nPlanksB;
             if (lastNailsPivot < nailsPivot) {
                 nPlanksB = n - nPlanksA;
-                Pair[] planksTmp = new Pair[nPlanksB];
-                int k = 0;
+                ArrayList<Pair> planksTmp = new ArrayList<Pair>();
+                int nNew = 0;
                 for (int i = 0; i < nPlanksB; i++) {
                     if (A[i + nPlanksA] <= nailsPivot) {
-                        planksTmp[k++] = new Pair(A[i + nPlanksA], B[i + nPlanksA]);
+                        planksTmp.add(new Pair(A[i + nPlanksA], B[i + nPlanksA]));
+                        nNew++;
                     }
                 }
-                if (k > 0) {
-                    pairSort.sort(planksTmp, 0, k - 1);
+                if (nNew > 0) {
+                    pairSort.sort(planksTmp, 0, nNew - 1);
                 }
-                Pair[] sortResult = new Pair[nPlanksA + k];
-                pairSort.mergeSortMerge(sortResult, planksA, planksTmp, nPlanksA, k);
-                planksA = sortResult;
-                nPlanksA += k;
-                nPlanksB -= k;
+                pairSort.mergeSortMerge(planksA, planksA, planksTmp, nPlanksA, nNew);
+                nPlanksA += nNew;
+                nPlanksB -= nNew;
             } else {
-                planksA = new Pair[n];
+                planksA = new ArrayList<Pair>();
                 nPlanksA = 0;
                 nPlanksB = 0;
                 for (int i = 0; i < n; i++) {
                     if (A[i] <= nailsPivot) {
-                        planksA[nPlanksA++] = new Pair(A[i], B[i]);
+                        planksA.add(new Pair(A[i], B[i]));
+                        nPlanksA++;
                     } else {
-                        planksB[nPlanksB++] = new Pair(A[i], B[i]);
+                        planksB.add(new Pair(A[i], B[i]));
+                        nPlanksB++;
                     }
                 }
-                pairSort.sort(planksA, 0, nPlanksA - 1);
+                pairSort.sort(planksA);
             }
             lastNailsPivot = nailsPivot;
-            if (check8(nailsA, planksA, nPlanksA, nPlanksB)) {
+            if (check8(nailsA, planksA, nPlanksB)) {
                 end = mid - 1;
                 result = mid;
             } else {
@@ -163,13 +172,29 @@ public class NailingPlanks {
         return result;
     }
 
-    public boolean check8(Integer[] nailsA, Pair[] planksA, int nPlanksA, int nPlanksB) {
+    public static void main(String[] args) {
+        NailingPlanks np = new NailingPlanks();
+        Assert.assertEquals(-1, np.solution(new int[]{1, 4, 5, 8}, new int[]{4, 5, 9, 10}, new int[]{30}));
+        Assert.assertEquals(-1, np.solution(new int[]{1, 4, 5, 8}, new int[]{4, 5, 9, 10}, new int[]{60000, 60000, 60000}));
+        Assert.assertEquals(6, np.solution(new int[]{1, 4, 5, 8}, new int[]{4, 5, 9, 10}, new int[]{4, 6, 6, 6, 7, 10, 2}));
+        Assert.assertEquals(4, np.solution(new int[]{1, 4, 5, 8}, new int[]{4, 5, 9, 10}, new int[]{4, 6, 7, 10, 2}));
+        Assert.assertEquals(7, np.solution(new int[]{2, 5, 6, 9}, new int[]{5, 6, 10, 11}, new int[]{1, 1, 1, 5, 7, 8, 11, 3}));
+        Assert.assertEquals(8, np.solution(new int[]{2, 10}, new int[]{4, 12}, new int[]{1, 1, 1, 3, 5, 5, 5, 11, 20, 20, 20}));
+        Assert.assertEquals(1, np.solution(new int[]{2, 3, 4}, new int[]{20, 19, 18}, new int[]{9, 9, 9, 9}));
+        Assert.assertEquals(4, np.solution(new int[]{8, 5, 4, 1}, new int[]{10, 9, 5, 4}, new int[]{4, 6, 7, 10, 2}));
+        Assert.assertEquals(4, np.solution(new int[]{8, 5, 4, 1}, new int[]{10, 9, 5, 4}, new int[]{4, 6, 7, 10, 2, 2}));
+        Assert.assertEquals(8, np.solution(new int[]{1, 9, 9, 5, 1, 1, 5, 1, 9, 9}, new int[]{8, 9, 9, 9, 9, 6, 6, 9, 9, 9}, new int[]{1, 10, 7, 1, 10, 6, 6, 9, 4, 7}));
+        Assert.assertEquals(4, np.solution(new int[]{1, 4, 5, 8}, new int[]{4, 5, 9, 10}, new int[]{4, 6, 7, 10, 2}));
+        Assert.assertEquals(6, np.solution(new int[]{2, 3, 4, 6}, new int[]{9, 7, 7, 6}, new int[]{10, 12, 1, 7, 3, 6, 13}));
+        System.out.println("OK");
+    }
+
+    public boolean check8(Integer[] nailsA, ArrayList<Pair> planksA, int nPlanksB) {
         if (nPlanksB > 0) {
             return false;
         }
         int lastNail = 0;
-        for (int i = 0; i < nPlanksA; i++) {
-            Pair plank = planksA[i];
+        for(Pair plank:planksA){
             boolean nailed = false;
             for (int j = lastNail; j < nailsA.length; j++) {
                 if (plank.ini <= nailsA[j] && nailsA[j] <= plank.end) {
@@ -235,45 +260,6 @@ public class NailingPlanks {
 //        }
 //        return result;
 //    }
-
-    public boolean check7(Integer[] nailsA, Pair[] planksA, int nPlanksA, int nPlanksB) {
-        if (nPlanksB > 0) {
-            return false;
-        }
-        int lastNail = 0;
-        for (int i = 0; i < nPlanksA; i++) {
-            Pair plank = planksA[i];
-            boolean nailed = false;
-            for (int j = lastNail; j < nailsA.length; j++) {
-                if (plank.ini <= nailsA[j] && nailsA[j] <= plank.end) {
-                    nailed = true;
-                    lastNail = j;
-                    break;
-                }
-            }
-            if (!nailed) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static void main(String[] args) {
-        NailingPlanks np = new NailingPlanks();
-//        Assert.assertEquals(-1, np.solution(new int[]{1, 4, 5, 8}, new int[]{4, 5, 9, 10}, new int[]{30}));
-//        Assert.assertEquals(-1, np.solution(new int[]{1, 4, 5, 8}, new int[]{4, 5, 9, 10}, new int[]{60000, 60000, 60000}));
-        Assert.assertEquals(6, np.solution(new int[]{1, 4, 5, 8}, new int[]{4, 5, 9, 10}, new int[]{4, 6, 6, 6, 7, 10, 2}));
-        Assert.assertEquals(4, np.solution(new int[]{1, 4, 5, 8}, new int[]{4, 5, 9, 10}, new int[]{4, 6, 7, 10, 2}));
-        Assert.assertEquals(7, np.solution(new int[]{2, 5, 6, 9}, new int[]{5, 6, 10, 11}, new int[]{1, 1, 1, 5, 7, 8, 11, 3}));
-        Assert.assertEquals(8, np.solution(new int[]{2, 10}, new int[]{4, 12}, new int[]{1, 1, 1, 3, 5, 5, 5, 11, 20, 20, 20}));
-        Assert.assertEquals(1, np.solution(new int[]{2, 3, 4}, new int[]{20, 19, 18}, new int[]{9, 9, 9, 9}));
-        Assert.assertEquals(4, np.solution(new int[]{8, 5, 4, 1}, new int[]{10, 9, 5, 4}, new int[]{4, 6, 7, 10, 2}));
-        Assert.assertEquals(4, np.solution(new int[]{8, 5, 4, 1}, new int[]{10, 9, 5, 4}, new int[]{4, 6, 7, 10, 2, 2}));
-        Assert.assertEquals(8, np.solution(new int[]{1, 9, 9, 5, 1, 1, 5, 1, 9, 9}, new int[]{8, 9, 9, 9, 9, 6, 6, 9, 9, 9}, new int[]{1, 10, 7, 1, 10, 6, 6, 9, 4, 7}));
-        Assert.assertEquals(4, np.solution(new int[]{1, 4, 5, 8}, new int[]{4, 5, 9, 10}, new int[]{4, 6, 7, 10, 2}));
-        Assert.assertEquals(6, np.solution(new int[]{2, 3, 4, 6}, new int[]{9, 7, 7, 6}, new int[]{10, 12, 1, 7, 3, 6, 13}));
-        System.out.println("OK");
-    }
 
     /**
      * O((N + M) * log(M))
@@ -412,7 +398,6 @@ public class NailingPlanks {
         return true;
     }
 
-
     public static final int MAXNAILPOS = 10;
 
     public static void fancyTest(NailingPlanks np, int n, int m) {
@@ -444,24 +429,24 @@ public class NailingPlanks {
 //        Assert.assertNotEquals(-1,np.solution(A, B, C));
     }
 
-    public int solution6(int[] A, int[] B, int[] C) {
-        int m = C.length;
-        int beg = 1;
-        int end = m;
-        int result = -1;
-        MergeSort<Integer> integerSort = MergeSort.of(Integer.class, 1);
-        MergeSort<Pair> pairSort = MergeSort.of(Pair.class, new Pair(1, 2));
-        while (beg <= end) {
-            int mid = (beg + end) / 2;
-            if (check6(A, B, C, mid, integerSort, pairSort)) {
-                end = mid - 1;
-                result = mid;
-            } else {
-                beg = mid + 1;
-            }
-        }
-        return result;
-    }
+//    public int solution6(int[] A, int[] B, int[] C) {
+//        int m = C.length;
+//        int beg = 1;
+//        int end = m;
+//        int result = -1;
+//        MergeSort<Integer> integerSort = MergeSort.of(Integer.class, 1);
+//        MergeSort<Pair> pairSort = MergeSort.of(Pair.class, new Pair(1, 2));
+//        while (beg <= end) {
+//            int mid = (beg + end) / 2;
+//            if (check6(A, B, C, mid, integerSort, pairSort)) {
+//                end = mid - 1;
+//                result = mid;
+//            } else {
+//                beg = mid + 1;
+//            }
+//        }
+//        return result;
+//    }
 
     public boolean check6(int[] A, int[] B, int[] C, int mid, MergeSort<Integer> integerSort, MergeSort<Pair> pairSort) {
         int n = A.length;

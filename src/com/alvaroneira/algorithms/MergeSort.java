@@ -1,8 +1,8 @@
 package com.alvaroneira.algorithms;
 
-import com.alvaroneira.questions.NailingPlanks;
+import java.util.ArrayList;
 
-public class MergeSort<T> {
+public class MergeSort<T extends Comparable<T>> {
     T t;
 
     public MergeSort(Class<T> tClass, T t) {
@@ -14,10 +14,10 @@ public class MergeSort<T> {
         this.t = t;
     }
 
-    public static <T> MergeSort<T> of(Class<T> tClass, T t) {
-        if (!tClass.isAssignableFrom(t.getClass())) throw new IllegalArgumentException("Must be a " + tClass);
-        return new MergeSort(t);
-    }
+//    public static <T> MergeSort<T> of(Class<T> tClass, T t) {
+//        if (!tClass.isAssignableFrom(t.getClass())) throw new IllegalArgumentException("Must be a " + tClass);
+//        return new MergeSort(t);
+//    }
 
     public void sort(T arr[]) {
         sort(arr, 0, arr.length - 1);
@@ -37,21 +37,56 @@ public class MergeSort<T> {
         }
     }
 
-    void merge(Object arr[], int l, int m, int r) {
+    public void sort(ArrayList<T> arr) {
+        int l = 0;
+        int r = arr.size() - 1;
+        sort(arr, l, r);
+    }
+
+    public void sort(ArrayList<T> arr, int l, int r) {
+        if (l < r) {
+            // Find the middle point
+            int m = (l + r) / 2;
+
+            // Sort first and second halves
+            sort(arr, l, m);
+            sort(arr, m + 1, r);
+
+            // Find sizes of two subarrays to be merged
+            int n1 = m - l + 1;
+            int n2 = r - m;
+
+            /* Create temp arrays */
+            ArrayList<T> L = new ArrayList<T>(n1);
+            ArrayList<T> R = new ArrayList<T>(n2);
+
+            /*Copy data to temp arrays*/
+            for (int i = 0; i < n1; ++i) {
+                L.add(arr.get(l + i));
+            }
+            for (int j = 0; j < n2; ++j) {
+                R.add(arr.get(m + 1 + j));
+            }
+
+            mergeSortMerge(arr, L, R, n1, n2, l);
+        }
+    }
+
+
+    void merge(Comparable arr[], int l, int m, int r) {
         // Find sizes of two subarrays to be merged
         int n1 = m - l + 1;
         int n2 = r - m;
 
         /* Create temp arrays */
-        Object L[] = new Object[n1];
-        Object R[] = new Object[n2];
+        Comparable L[] = new Comparable[n1];
+        Comparable R[] = new Comparable[n2];
 
         /*Copy data to temp arrays*/
         for (int i = 0; i < n1; ++i)
             L[i] = arr[l + i];
         for (int j = 0; j < n2; ++j)
             R[j] = arr[m + 1 + j];
-
 
         /* Merge the temp arrays */
 
@@ -61,8 +96,7 @@ public class MergeSort<T> {
         // Initial index of merged subarry array
         int k = l;
         while (i < n1 && j < n2) {
-
-            if (compare(L[i], R[j]) <= 0) {
+            if (L[i].compareTo(R[j]) <= 0) {
                 arr[k] = L[i];
                 i++;
             } else {
@@ -87,14 +121,6 @@ public class MergeSort<T> {
         }
     }
 
-    int compare(Object o1, Object o2) {
-        if (t.getClass() == NailingPlanks.Pair.class) {
-            return ((NailingPlanks.Pair) o1).end - ((NailingPlanks.Pair) o2).end;
-        } else {
-            return ((Integer) o1) - ((Integer) o2);
-        }
-    }
-
     public void mergeSortMerge(T[] result, T[] L, T[] R) {
         int n1 = L.length;
         int n2 = R.length;
@@ -110,8 +136,7 @@ public class MergeSort<T> {
         // Initial index of merged subarry array
         int k = 0;
         while (i < n1 && j < n2) {
-
-            if (compareObjects(L[i], R[j]) <= 0) {
+            if (L[i].compareTo(R[j]) <= 0) {
                 result[k] = L[i];
                 i++;
             } else {
@@ -136,11 +161,45 @@ public class MergeSort<T> {
         }
     }
 
-    public static int compareObjects(Object o1, Object o2) {
-        if (o1 instanceof NailingPlanks.Pair && o2 instanceof NailingPlanks.Pair) {
-            return ((NailingPlanks.Pair) o1).end - ((NailingPlanks.Pair) o2).end;
-        } else {
-            return ((Integer) o1) - ((Integer) o2);
+    public void mergeSortMerge(ArrayList<T> result, ArrayList<T> L, ArrayList<T> R, int n1, int n2) {
+        mergeSortMerge(result, L, R, n1, n2, 0);
+    }
+
+    public void mergeSortMerge(ArrayList<T> result, ArrayList<T> L, ArrayList<T> R, int n1, int n2, int l) {
+        // Initial index of merged subarry array
+        int k = l;
+        int i = 0, j = 0;
+        while (i < n1 && j < n2) {
+            if (L.get(i).compareTo(R.get(j)) <= 0) {
+                result.set(k, L.get(i));
+                i++;
+            } else {
+                result.set(k, R.get(j));
+                j++;
+            }
+            k++;
+        }
+
+        /* Copy remaining elements of L[] if any */
+        while (i < n1) {
+            if(result.size()<=k){
+                result.add(L.get(i));
+            } else {
+                result.set(k, L.get(i));
+            }
+            i++;
+            k++;
+        }
+
+        /* Copy remaining elements of R[] if any */
+        while (j < n2) {
+            if(result.size()<=k){
+                result.add(R.get(j));
+            } else {
+                result.set(k, R.get(j));
+            }
+            j++;
+            k++;
         }
     }
 }
