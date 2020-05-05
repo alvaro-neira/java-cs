@@ -96,36 +96,19 @@ public class ArrayUtils {
         System.out.println(retVal + "]");
     }
 
-    public static void printArr(Integer[] arr) {
+    public static <T> void printArr(T[] arr) {
         int ini=0;
         int end=arr.length;
+        if(end == 0){
+            System.out.println("[]");
+            return;
+        }
         String retVal = "[";
-        for (int i = 0; i < ini; i++) {
-            retVal += "_,";
-        }
-        for (int i = ini; i < end; i++) {
-            retVal += arr[i] + ",";
-        }
-        for (int i = end; i < arr.length; i++) {
-            retVal += "_,";
-        }
-        retVal = retVal.substring(0, retVal.length() - 1);
-        System.out.println(retVal + "]");
-    }
 
-    public static void printArr(Object[] arr) {
-        int ini=0;
-        int end=arr.length;
-        String retVal = "[";
-        for (int i = 0; i < ini; i++) {
-            retVal += "_,";
-        }
         for (int i = ini; i < end; i++) {
             retVal += arr[i] + ",";
         }
-        for (int i = end; i < arr.length; i++) {
-            retVal += "_,";
-        }
+
         retVal = retVal.substring(0, retVal.length() - 1);
         System.out.println(retVal + "]");
     }
