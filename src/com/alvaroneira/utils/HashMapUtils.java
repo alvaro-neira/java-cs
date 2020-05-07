@@ -9,15 +9,14 @@ import java.util.stream.IntStream;
 import static com.alvaroneira.utils.NumberUtils.numberOfOnes;
 
 public class HashMapUtils {
-    public static void printHashMap(HashMap<Integer,Integer> hm){
-        Iterator it = hm.entrySet().iterator();
+    public static void printHashMap(HashMap<Integer, Integer> hm) {
+        Iterator<Map.Entry<Integer, Integer>> it = hm.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
+            Map.Entry<Integer, Integer> pair = it.next();
             System.out.println(pair.getKey() + " = " + pair.getValue());
-//            it.remove(); // avoids a ConcurrentModificationException
         }
+        System.out.println();
     }
-
 
     public static void printHashSet(HashSet<Integer> hs) {
         Iterator<Integer> itr = hs.iterator();
