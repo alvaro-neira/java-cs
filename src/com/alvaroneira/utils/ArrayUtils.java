@@ -96,19 +96,21 @@ public class ArrayUtils {
         System.out.println(retVal + "]");
     }
 
+    /**
+     * @param arr
+     * @param <T>
+     */
     public static <T> void printArr(T[] arr) {
-        int ini=0;
-        int end=arr.length;
-        if(end == 0){
+        int ini = 0;
+        int end = arr.length;
+        if (end == 0) {
             System.out.println("[]");
             return;
         }
         String retVal = "[";
-
         for (int i = ini; i < end; i++) {
             retVal += arr[i] + ",";
         }
-
         retVal = retVal.substring(0, retVal.length() - 1);
         System.out.println(retVal + "]");
     }
