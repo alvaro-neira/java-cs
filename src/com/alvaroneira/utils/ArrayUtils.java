@@ -115,15 +115,6 @@ public class ArrayUtils {
         System.out.println(retVal + "]");
     }
 
-    public static void printHashSet(HashSet<Integer> hs) {
-        Iterator<Integer> itr = hs.iterator();
-        while (itr.hasNext()) {
-            Integer sum = itr.next();
-            System.out.print(sum + ",");
-        }
-        System.out.println();
-    }
-
     /**
      * Lists 2^n - 1 subsets(skips empty set)
      *

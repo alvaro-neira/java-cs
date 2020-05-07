@@ -80,21 +80,16 @@ public class NumberUtils {
 //        return retVal;
 //    }
 
+    public static int fibonacciBinet(int n) {
+        double squareRootOf5 = Math.sqrt(5);
+        double phi = (1 + squareRootOf5)/2;
+        int nthTerm = (int) ((Math.pow(phi, n) - Math.pow(-phi, -n))/squareRootOf5);
+        return nthTerm;
+    }
+
     public static void main(String[] args) {
-//        System.out.println(factorial(1));
-//        System.out.println(factorial(2));
-//        System.out.println(factorial(3));
-//        System.out.println(factorial(4));
 //        System.out.println(factorial(5));
-        System.out.println();
-        System.out.println(binomial(6, 3));
-        System.out.println(binomial(4, 3));
-        System.out.println(binomial(4, 0));
-        System.out.println(binomial(4, 2));
-        System.out.println(binomial(4, 4));
-        System.out.println();
-        for (int i = 1; i < 100; i++) {
-            ArrayUtils.printArr(changeDecimalBase(i, 16, 3));
-        }
+//        System.out.println(binomial(4, 4));
+        System.out.println(fibonacciBinet(7));
     }
 }
