@@ -11,20 +11,14 @@ import static com.alvaroneira.utils.ArrayUtils.sum;
 
 class FibFrog {
     public static void recn(HashMap<Integer, Integer> jumps, ArrayList<Integer> fib, int order, int[] A) {
-        Iterator<Map.Entry<Integer, Integer>> it = jumps.entrySet().iterator();
         int n = A.length;
         HashMap<Integer, Integer> jumpsTmp = new HashMap<Integer, Integer>();
-        if (order == 1) {
-            for (int i = 0; i < fib.size(); i++) {
-                if (fib.get(i) <= n) {
-                    jumpsTmp.put(fib.get(i), 1);
-                }
-            }
-        }
-        while (it.hasNext()) {
-            Map.Entry<Integer, Integer> pair = it.next();
-            Integer alreadyFib = order == 1 ? 0 : pair.getKey();
-            for (int i = 0; i < fib.size(); i++) {
+        for (int i = 0; i < fib.size(); i++) {
+            int o = order;
+            Iterator<Map.Entry<Integer, Integer>> it = jumps.entrySet().iterator();
+            while (it.hasNext() || (o == 1 && --o == 0)) {
+                Map.Entry<Integer, Integer> pair = order == 1 ? null : it.next();
+                Integer alreadyFib = order == 1 ? 0 : pair.getKey();
                 Integer k = alreadyFib + fib.get(i);
                 if (!jumps.containsKey(k) && k <= n) {
                     jumpsTmp.put(k, order);
@@ -35,47 +29,40 @@ class FibFrog {
     }
 
     public int solution(int[] A) {
-        int nLeaves = A.length + 2;
-        int[] leaves = new int[nLeaves];
-        leaves[0] = 1;
-        leaves[nLeaves - 1] = 1;
-        int L = 2;
+        int nLeafPositions = A.length + 2;
+        int[] leafPositions = new int[nLeafPositions];
+        leafPositions[0] = 1;
+        leafPositions[nLeafPositions - 1] = 1;
+        ArrayList<Integer> emptyPositions = new ArrayList<Integer>();
         for (int i = 0; i < A.length; i++) {
-            leaves[i + 1] = A[i];
-            if (leaves[i + 1] == 1) {
-                L++;
+            leafPositions[i + 1] = A[i];
+            if (leafPositions[i + 1] == 0) {
+                emptyPositions.add(i + 1);
             }
         }
         ArrayList<Integer> fib = new ArrayList<Integer>();
         int f = fibonacciBinet(0);
-        for (int i = 1; f <= nLeaves; i++) {
+        for (int i = 1; f <= nLeafPositions; i++) {
             f = fibonacciBinet(i);
             fib.add(f);
         }
         HashMap<Integer, Integer> jumps = new HashMap<Integer, Integer>();
-        if (L == 2) {
-            recn(jumps, fib, 1, leaves);
-        } else {
-            int order = 1;
-            while (!jumps.containsKey(nLeaves - 1)) {
-                recn(jumps, fib, order, leaves);
-                for (int i = 0; i < nLeaves; i++) {
-                    if (leaves[i] == 0) {
-                        jumps.remove(i);
-                    }
-                }
-                if (jumps.isEmpty()) {
-                    break;
-                }
-                order++;
+        int order = 1;
+        while (!jumps.containsKey(nLeafPositions - 1) && order < nLeafPositions) {
+            recn(jumps, fib, order, leafPositions);
+            for (Integer emptyPos : emptyPositions) {
+                jumps.remove(emptyPos);
             }
+            if (jumps.isEmpty()) {
+                break;
+            }
+            order++;
         }
-        if (jumps.containsKey(nLeaves - 1)) {
-            return jumps.get(nLeaves - 1);
+        if (jumps.containsKey(nLeafPositions - 1)) {
+            return jumps.get(nLeafPositions - 1);
         } else {
             return -1;
         }
-
     }
 
     public static void main(String[] args) {
