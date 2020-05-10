@@ -83,31 +83,34 @@ class FibFrog {
      */
     public int solution(int[] A) {
         int nLeafPositions = A.length + 2;
-        HashSet<Integer> fullPositions = new HashSet<Integer>();
+        int[] fullPositions = new int[nLeafPositions];
         for (int i = 0; i < A.length; i++) {
             if (A[i] == 1) {
-                fullPositions.add(i + 1);
+                fullPositions[i + 1] = 1;
             }
         }
-        fullPositions.add(0);
-        fullPositions.add(nLeafPositions - 1);
-        ArrayList<Integer> fib = new ArrayList<Integer>();
+        fullPositions[0] = 1;
+        fullPositions[nLeafPositions - 1] = 1;
+        int[] fib = new int[nLeafPositions];
         int f = fibonacciBinet(1);
-        for (int i = 2; f < nLeafPositions; i++) {
+        int i = 2;
+        while (f < nLeafPositions) {
             f = fibonacciBinet(i);
-            fib.add(f);
+            fib[i - 2] = f;
+            i++;
         }
+        int lastFibIndex = i - 3;
         int[] jumps = new int[nLeafPositions];
 
         for (Integer k : fib) {
-            if (fullPositions.contains(k)) {
+            if (k < nLeafPositions && fullPositions[k] > 0) {
                 jumps[k] = 1;
             }
         }
 
         int order = 2;
         while (jumps[nLeafPositions - 1] == 0 && order < nLeafPositions) {
-            rec2(jumps, fib, order, fullPositions);
+            rec2(jumps, fib, lastFibIndex, order, fullPositions);
             order++;
         }
         if (jumps[nLeafPositions - 1] > 0) {
@@ -117,9 +120,9 @@ class FibFrog {
         }
     }
 
-    public static void rec2(int[] jumps, ArrayList<Integer> fib, int order, HashSet<Integer> fullPositions) {
+    public static void rec2(int[] jumps, int[] fib, int lastFibIndex, int order, int[] fullPositions) {
         Integer k = 0;
-        int maxFib = fib.get(fib.size() - 1);
+        int maxFib = fib[lastFibIndex];
         for (int j = 0; j < jumps.length; j++) {
             if (jumps[j] == 0) {
                 continue;
@@ -129,12 +132,12 @@ class FibFrog {
             if (alreadyOrder == order) {
                 continue;
             }
-            for (int i = 0; i < fib.size(); i++) {
-                k = alreadyFib + fib.get(i);
+            for (int i = 0; i <= lastFibIndex; i++) {
+                k = alreadyFib + fib[i];
                 if (k > maxFib) {
                     break;
                 }
-                if (fullPositions.contains(k) && jumps[k] == 0) {
+                if (k < fullPositions.length && fullPositions[k] > 0 && jumps[k] == 0) {
                     jumps[k] = order;
                 }
             }
