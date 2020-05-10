@@ -3,11 +3,9 @@ package com.alvaroneira.questions;
 import org.junit.Assert;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
-import static com.alvaroneira.utils.HashMapUtils.printHashMap;
-import static com.alvaroneira.utils.HashMapUtils.printHashSet;
 import static com.alvaroneira.utils.NumberUtils.fibonacciBinet;
-import static com.alvaroneira.utils.ArrayUtils.sum;
 
 /**
  *  FibFrog
@@ -70,24 +68,19 @@ import static com.alvaroneira.utils.ArrayUtils.sum;
  */
 
 class FibFrog {
-    public static void recn(HashMap<Integer, Integer> jumps, ArrayList<Integer> fib, int order, HashSet<Integer> fullPositions) {
-        HashMap<Integer, Integer> jumpsTmp = new HashMap<Integer, Integer>();
-        for (int i = 0; i < fib.size(); i++) {
-            int o = order;
-            Integer k = 0;
-            Iterator<Map.Entry<Integer, Integer>> it = jumps.entrySet().iterator();
-            while (k < fib.get(fib.size() - 1) && (it.hasNext() || (o == 1 && --o == 0))) {
-                Map.Entry<Integer, Integer> pair = order == 1 ? null : it.next();
-                Integer alreadyFib = order == 1 ? 0 : pair.getKey();
-                k = alreadyFib + fib.get(i);
-                if (fullPositions.contains(k) && !jumps.containsKey(k)) {
-                    jumpsTmp.put(k, order);
-                }
-            }
-        }
-        jumps.putAll(jumpsTmp);
+    public static int fibonacciBinet(int n) {
+        double squareRootOf5 = Math.sqrt(5);
+        double phi = (1 + squareRootOf5) / 2;
+        int nthTerm = (int) ((Math.pow(phi, n) - Math.pow(-phi, -n)) / squareRootOf5);
+        return nthTerm;
     }
 
+    /**
+     * O(N * log(N) ** N)
+     *
+     * @param A
+     * @return
+     */
     public int solution(int[] A) {
         int nLeafPositions = A.length + 2;
         HashSet<Integer> fullPositions = new HashSet<Integer>();
@@ -104,17 +97,152 @@ class FibFrog {
             f = fibonacciBinet(i);
             fib.add(f);
         }
-        HashMap<Integer, Integer> jumps = new HashMap<Integer, Integer>();
-        int order = 1;
-        while (!jumps.containsKey(nLeafPositions - 1) && order < nLeafPositions) {
-            recn(jumps, fib, order, fullPositions);
+        int[] jumps = new int[nLeafPositions];
+
+        for (Integer k : fib) {
+            if (fullPositions.contains(k)) {
+                jumps[k] = 1;
+            }
+        }
+
+        int order = 2;
+        while (jumps[nLeafPositions - 1] == 0 && order < nLeafPositions) {
+            rec2(jumps, fib, order, fullPositions);
             order++;
         }
-        if (jumps.containsKey(nLeafPositions - 1)) {
-            return jumps.get(nLeafPositions - 1);
+        if (jumps[nLeafPositions - 1] > 0) {
+            return order - 1;
         } else {
             return -1;
         }
+    }
+
+    public static void rec2(int[] jumps, ArrayList<Integer> fib, int order, HashSet<Integer> fullPositions) {
+        Integer k = 0;
+        int maxFib = fib.get(fib.size() - 1);
+        for (int j = 0; j < jumps.length; j++) {
+            if (jumps[j] == 0) {
+                continue;
+            }
+            Integer alreadyFib = j;
+            Integer alreadyOrder = jumps[j];
+            if (alreadyOrder == order) {
+                continue;
+            }
+            for (int i = 0; i < fib.size(); i++) {
+                k = alreadyFib + fib.get(i);
+                if (k > maxFib) {
+                    break;
+                }
+                if (fullPositions.contains(k) && jumps[k] == 0) {
+                    jumps[k] = order;
+                }
+            }
+        }
+    }
+
+    public int solution3(int[] A) {
+        int nLeafPositions = A.length + 2;
+        ArrayList<Integer> fib = new ArrayList<Integer>();
+        int f = fibonacciBinet(1);
+        for (int i = 2; f < nLeafPositions; i++) {
+            f = fibonacciBinet(i);
+            fib.add(f);
+        }
+
+        TreeSet<Integer> fullPositions = new TreeSet<Integer>(Collections.reverseOrder());
+        for (int i = 0; i < A.length; i++) {
+            if (A[i] == 1) {
+                fullPositions.add(i + 1);
+            }
+        }
+        fullPositions.add(0);
+        fullPositions.add(nLeafPositions - 1);
+        if (nLeafPositions <= 4) {
+            return 1;
+        }
+        TreeSet<Integer> alreadyUsedPivots = new TreeSet<Integer>();
+        Integer pivot = findPivot(fullPositions, 0, nLeafPositions - 1, alreadyUsedPivots);
+        if (pivot == -1) {
+            return -1;
+        }
+        int r1 = rec(fib, fullPositions, 0, pivot + 1);
+        int r2 = rec(fib, fullPositions, pivot, nLeafPositions);
+        int retVal = (r1 > 0 && r2 > 0) ? r1 + r2 : -1;
+        if(retVal == 1){
+            return 1;
+        }
+        while (alreadyUsedPivots.size() < fullPositions.size()) {
+            alreadyUsedPivots.add(pivot);
+            pivot = findPivot(fullPositions, 0, nLeafPositions - 1, alreadyUsedPivots);
+            if (pivot == -1) {
+                break;
+            }
+            r1 = rec(fib, fullPositions, 0, pivot + 1);
+            r2 = rec(fib, fullPositions, pivot, nLeafPositions);
+            int r = (r1 > 0 && r2 > 0) ? r1 + r2 : -1;
+            if (retVal <= 0) {
+                retVal = r;
+            } else if (r > 0 && r < retVal) {
+                retVal = r;
+            }
+            if(retVal == 1){
+                return 1;
+            }
+        }
+
+        if (retVal > 0) {
+            return retVal;
+        } else {
+            return -1;
+        }
+    }
+
+    public int rec(ArrayList<Integer> fib, TreeSet<Integer> fullPositions, int ini, int end) {
+        TreeSet<Integer> alreadyUsedPivots = new TreeSet<Integer>();
+        if (end - ini == 1) {
+            return 1;
+        }
+        HashMap<Integer, Integer> jumps = new HashMap<Integer, Integer>();
+        for (Integer f : fib) {
+            int k = f + ini;
+            if (fullPositions.contains(k) && k >= ini && k < end) {
+                jumps.put(k, 1);
+            }
+        }
+        if (jumps.containsKey(end - 1)) {
+            return jumps.get(end - 1);
+        }
+        Integer pivot = findPivot(fullPositions, ini, end - 1, alreadyUsedPivots);
+        if (pivot == -1) {
+            return -1;
+        }
+        int rec1 = rec(fib, fullPositions, ini, pivot + 1);
+        int rec2 = rec(fib, fullPositions, pivot, end);
+        while (alreadyUsedPivots.size() < fullPositions.size() && (rec1 < 0 || rec2 < 0)) {
+            alreadyUsedPivots.add(pivot);
+            pivot = findPivot(fullPositions, ini, end - 1, alreadyUsedPivots);
+            if (pivot == -1) {
+                return -1;
+            }
+            rec1 = rec(fib, fullPositions, ini, pivot + 1);
+            rec2 = rec(fib, fullPositions, pivot, end);
+        }
+        return rec1 + rec2;
+    }
+
+    public Integer findPivot(TreeSet<Integer> fullPositions, int ini, int end, TreeSet<Integer> alreadyUsedPivots) {
+        Iterator<Integer> iterator = fullPositions.iterator();
+        while (iterator.hasNext()) {
+            Integer pos = iterator.next();
+            if (alreadyUsedPivots.contains(pos)) {
+                continue;
+            }
+            if (pos > ini && pos < end) {
+                return pos;
+            }
+        }
+        return -1;
     }
 
     public static void main(String[] args) {
@@ -128,8 +256,31 @@ class FibFrog {
         Assert.assertEquals(1, ff.solution(new int[]{0, 0}));
         Assert.assertEquals(-1, ff.solution(new int[]{0, 0, 0}));
         Assert.assertEquals(-1, ff.solution(new int[]{0, 0, 0, 1, 0}));
+        Assert.assertEquals(3, ff.solution(new int[]{0, 0, 0, 1, 1, 0, 1, 0, 0, 0, 0}));
+        Assert.assertEquals(2, ff.solution(new int[]{1, 1, 0, 0, 0}));
+        Assert.assertEquals(2, ff.solution(new int[]{0, 0, 1, 0, 0, 0, 1, 1, 1, 1}));
+        Assert.assertEquals(2, ff.solution(new int[]{0, 0, 0, 0, 1}));
         System.out.println("OK");
     }
+
+    public Integer findPivot4(TreeSet<Integer> fullPositions, int ini, int end, TreeSet<Integer> alreadyUsedPivots) {
+        int pos1 = ini + (end - ini) / 2;
+        int pos2 = pos1 + 1;
+        while (pos1 > ini || pos2 < end) {
+            if (fullPositions.contains(pos1) && !alreadyUsedPivots.contains(pos1) && pos1 > ini) {
+                return pos1;
+            } else {
+                pos1--;
+            }
+            if (fullPositions.contains(pos2) && !alreadyUsedPivots.contains(pos2) && pos2 < end) {
+                return pos2;
+            } else {
+                pos2++;
+            }
+        }
+        return -1;
+    }
+
 
 //    public int solution1(int[] A) {
 //        int n = A.length;
@@ -154,4 +305,6 @@ class FibFrog {
 //            return -1;
 //        }
 //    }
+
+
 }
