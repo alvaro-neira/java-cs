@@ -4,4 +4,5 @@
 *.idea
 *.*~
 META-INF
-
+out
+venv
