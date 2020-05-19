@@ -61,6 +61,7 @@ import static com.alvaroneira.utils.ArrayUtils.printMatrix;
 class Ladder {
     /**
      * 100% in everything
+     * Using property: (A + B) % p = (A % p + B % p) % p
      * @param A
      * @param B
      * @return
