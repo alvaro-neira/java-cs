@@ -151,23 +151,22 @@ class FibFrog {
          */
         int[] fib = new int[n + 2];
         fib[1] = 1;
+        int retLen = n+2;
         for (int i = 2; i < n + 2; i++) {
             fib[i] = fib[i - 1] + fib[i - 2];
             if (fib[i] > n) {
-                int[] retVal = new int[i - 1];
-                for (int j = 0; j < i - 1; j++) {
-                    retVal[j] = fib[i - 1 - j];
-                }
-                return retVal;
+                retLen = i-1;
+                break;
             } else if (fib[i] == n) {
-                int[] retVal = new int[i];
-                for (int j = 0; j < i; j++) {
-                    retVal[j] = fib[i - j];
-                }
-                return retVal;
+                retLen = i;
+                break;
             }
         }
-        return null;
+        int[] retVal = new int[retLen];
+        for (int j = 0; j < retLen; j++) {
+            retVal[j] = fib[retLen - j];
+        }
+        return retVal;
 
     }
 
@@ -194,12 +193,9 @@ class FibFrog {
         int lenA = A.length;// Array length
         int[] fibonacci = fibonacciDynamic(lenA + 1);  // Fibonacci numbers
         ArrayList<Status> statusQueue = new ArrayList<>();
-        statusQueue.add(new Status(-1, 0));  // Initially we are at position -1 with 0 move.
+        statusQueue.add(new Status(-1, 0));  // Initially we are at position -1 with 0 moves.
         int nextTry = 0;  // We are not going to delete the tried attemp. So we need a pointer to the next attemp.
         boolean[] accessed = new boolean[lenA];  // Were we in this position before?
-        for (int i = 0; i < lenA; i++) {
-            accessed[i] = false;
-        }
         while (true) {
             if (nextTry == statusQueue.size()) {
                 //There is no unprocessed attemp.And we did not

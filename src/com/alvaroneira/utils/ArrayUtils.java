@@ -67,7 +67,7 @@ public class ArrayUtils {
         return IntStream.of(A).reduce(0, (a, b) -> a + b);
     }
 
-    public static void printMatrix(int[][] M) {
+    public static <T> void printMatrix(T[][] M) {
         int i, j;
         for (i = 0; i < M.length; i++) {
             for (j = 0; j < M[0].length; j++) {

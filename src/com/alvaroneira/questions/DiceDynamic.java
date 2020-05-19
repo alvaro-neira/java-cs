@@ -227,7 +227,7 @@ public class DiceDynamic {
                         DP[i][j-1]+A[j-1]);
             }
         }
-        printMatrix(DP);
+//        printMatrix(DP);
         return DP[n][price];
     }
 
@@ -257,7 +257,7 @@ public class DiceDynamic {
                 DP[swa][swe] = MIN_INT;
             }
         }
-        printMatrix(DP);
+//        printMatrix(DP);
         int j;
         for (int i = 1; i <= n; i++) {
             for (j = 0; j < denominations[i - 1]; j++) {
@@ -268,7 +268,7 @@ public class DiceDynamic {
                 DP[i][j] = Math.max(DP[i][j - denominations[i - 1]] + 1, DP[i - 1][j]);
             }
         }
-        printMatrix(DP);
+//        printMatrix(DP);
         return DP[n][price];
     }
 }

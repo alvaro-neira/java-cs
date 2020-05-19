@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import static com.alvaroneira.utils.ArrayUtils.enumerateSubsetsSizeK;
-import static com.alvaroneira.utils.ArrayUtils.printArr;
 import static com.alvaroneira.utils.NumberUtils.numberOfOnes;
 
 /**

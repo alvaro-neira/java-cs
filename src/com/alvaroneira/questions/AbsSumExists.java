@@ -62,7 +62,7 @@ public class AbsSumExists {
                 }
             }
         }
-        ArrayUtils.printMatrix(DP);
+//        ArrayUtils.printMatrix(DP);
         return DP[sum][N-1];
     }
 

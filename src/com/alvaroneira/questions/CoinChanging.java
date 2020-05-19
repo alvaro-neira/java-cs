@@ -68,7 +68,7 @@ public class CoinChanging {
                 DP[i][j] = Math.min(DP[i][j - denominations[i - 1]] + 1, DP[i - 1][j]);
             }
         }
-        ArrayUtils.printMatrix(DP);
+//        ArrayUtils.printMatrix(DP);
         return DP[n][price];
     }
 
