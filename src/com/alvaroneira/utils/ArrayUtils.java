@@ -9,10 +9,14 @@ import static com.alvaroneira.utils.NumberUtils.numberOfOnes;
  * Created by aneira on 3/18/17.
  */
 public class ArrayUtils {
-    public static String arr2str(int[] arr) {
+    public static <T> String arr2str(T[] arr) {
         String retVal = "[";
-        for (int elem : arr) {
-            retVal += elem + ",";
+        for (T elem : arr) {
+            if (elem instanceof Boolean) {
+                retVal += ((Boolean) elem ? 1 : 0) + ",";
+            } else {
+                retVal += elem + ",";
+            }
         }
         return retVal + "]";
     }
@@ -174,10 +178,5 @@ public class ArrayUtils {
     }
 
     public static void main(String[] args) {
-        int[][] subsets = enumerateSubsetsSizeK(new int[]{0, 1, 2, 3}, 3);
-//        int[][] subsets = enumerateSubsets(new int[]{0, 1, 2, 3});
-        for (int i = 0; i < subsets.length; i++) {
-            System.out.println(arr2str(subsets[i]));
-        }
     }
 }
