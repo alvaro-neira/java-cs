@@ -1,6 +1,6 @@
 package com.alvaroneira.questions;
 
-import com.alvaroneira.algorithms.GcdAndLcd;
+import com.alvaroneira.algorithms.Numbers;
 import org.junit.Assert;
 
 /**
@@ -43,7 +43,7 @@ class ChocolatesByNumbers {
      * @return
      */
     public int solution(int N, int M) {
-        return N / GcdAndLcd.gcd(N, M);
+        return N / Numbers.gcd(N, M);
     }
 
     public static void main(String[] args) {
