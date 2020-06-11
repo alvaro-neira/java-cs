@@ -57,7 +57,7 @@ public class Main {
         Iterator it = hm.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
-            System.out.println(pair.getKey() + " = " + pair.getValue());
+//            System.out.println(pair.getKey() + " = " + pair.getValue());
             it.remove(); // avoids a ConcurrentModificationException
         }
 
@@ -90,6 +90,91 @@ public class Main {
         root.insertInOrder(10);
         root.height(); //O(log n)
 
+//        int swa = 0;
+//        for (int i = 1000; i <= 9999; i++) {
+//            if ((i % 10) == 0) {
+//                if ((i % 5) == 0 && (i % 7) == 0) {
+//                    swa++;
+//                }
+//            }
+//        }
+//        System.out.println("swa="+swa);
+
+        int swa = 0;
+        for (int i = 0; i <= 1536; i++) {
+            String s = ""+i;
+            System.out.println(s);
+            for(int j=0;j<s.length();j++){
+                if(s.charAt(j)=='6'){
+                    swa++;
+                }
+            }
+        }
+        String uno=new String("a");
+        String dos=new String("a");
+        if(uno!=dos) {
+            System.out.println("swa=" + uno.equals(dos));
+        }
+        StringBuffer sf;
+//        System.out.println(IsCasiPalindromo("abccba"));
+//        System.out.println(IsCasiPalindromo("abccbx"));
+//        System.out.println(IsCasiPalindromo("abccfg"));
+//        System.out.println(NumMasPopular(new Integer[]{34, 31, 34, 77, 82}, 5));
+//        System.out.println(NumMasPopular(new Integer[]{77, 101, 102, 101, 102, 525, 88}, 7));
+//        System.out.println(NumMasPopular(new Integer[]{66}, 1));
+//        System.out.println(NumMasPopular(new Integer[]{14, 14, 2342, 2342, 2342}, 5));
+//        System.out.println(NumMasPopular(new Integer[]{}, 0));
+    }
+
+    //Java
+    public double averageDistance(int x1, int y1, int x2, int y2, int x3, int y3) {
+        double retVal = Math.sqrt((y2 - y1) * (y2 - y1) + (x2 - x1) * (x2 - x1));
+        retVal += Math.sqrt((y3 - y1) * (y3 - y1) + (x3 - x1) * (x3 - x1));
+        retVal += Math.sqrt((y3 - y2) * (y3 - y2) + (x3 - x2) * (x3 - x2));
+        return retVal / 3;
+    }
+
+
+    public static boolean IsCasiPalindromo(String str) {
+        int ini = 0;
+        int end = str.length() - 1;
+        int limit = 0;
+        while (ini <= end) {
+            if (str.substring(ini, ini + 1).compareTo(str.substring(end, end + 1)) != 0) {
+                limit++;
+                if (limit >= 2) {
+                    return false;
+                }
+            }
+            ini++;
+            end--;
+        }
+        return true;
+    }
+
+    //Java
+    public static Integer NumMasPopular(Integer[] arr, Integer n) {
+        HashMap<Integer, Integer> freq = new HashMap<Integer, Integer>();
+        Integer maxFreq = 0;
+        TreeSet<Integer> retVals = new TreeSet<Integer>();
+        for (int i = 0; i < n; i++) {
+            if (freq.containsKey(arr[i])) {
+                Integer f = freq.get(arr[i]) + 1;
+                freq.put(arr[i], f);
+                if (f > maxFreq) {
+                    maxFreq = f;
+                    retVals = new TreeSet<Integer>();
+                    retVals.add(arr[i]);
+                } else if (f == maxFreq) {
+                    retVals.add(arr[i]);
+                }
+            } else {
+                freq.put(arr[i], 1);
+                retVals = new TreeSet<Integer>();
+                retVals.add(arr[i]);
+            }
+        }
+        return retVals.first();
     }
 
     private static class MaxHeapComparator implements Comparator<Integer> {
