@@ -1,7 +1,5 @@
 package com.alvaroneira.datastructures;
 
-import com.alvaroneira.Main;
-
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
