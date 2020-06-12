@@ -10,7 +10,7 @@ public class LinkedInUsers {
     public static final String DELIMITER = "|";
     public static final String FILEOUT = "people.out";
     public static final int LIMIT = 100;
-    public static final int MEMLIMIT = 1000;
+    public static final int MEMLIMIT = 501;
 
     private static class MaxHeapComparator implements Comparator<Record> {
         @Override
@@ -19,7 +19,7 @@ public class LinkedInUsers {
         }
     }
 
-    public static void externalSort(ArrayList<String> fileNames) throws IOException {
+    private static void externalSort(ArrayList<String> fileNames) throws IOException {
         Integer heapSize = fileNames.size();
         int[] currentIndexes = new int[heapSize];
         Comparator<Record> maxHeapComparator = new MaxHeapComparator();
@@ -27,7 +27,12 @@ public class LinkedInUsers {
         ArrayList<BufferedReader> readers = new ArrayList<BufferedReader>();
         for (Integer j = 0; j < heapSize; j++) {
             BufferedReader br = new BufferedReader(new FileReader(fileNames.get(j)));
-            heap.add(new Record(br.readLine(), ESCAPED_DELIMITER, j));
+            String line = br.readLine();
+            if (line != null) {
+                heap.add(new Record(line, ESCAPED_DELIMITER, j));
+            } else {
+                System.err.println("Empty file '" + fileNames.get(j) + "'");
+            }
             readers.add(br);
         }
         BufferedWriter retVal = new BufferedWriter(new FileWriter(FILEOUT));
@@ -133,7 +138,17 @@ public class LinkedInUsers {
 
         @Override
         public int compareTo(Record r) {
-            return this.name == null ? -1 : this.name.compareTo(r.name);
+            int val = this.name == null ? -1 : this.name.compareTo(r.name);
+            if (val == 0) {
+                val = this.lastName == null ? -1 : this.lastName.compareTo(r.lastName);
+            }
+            if (val == 0) {
+                val = this.currentRole == null ? -1 : this.currentRole.compareTo(r.currentRole);
+            }
+            if (val == 0) {
+                val = this.country == null ? -1 : this.country.compareTo(r.country);
+            }
+            return val;
         }
 
         /**
