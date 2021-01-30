@@ -1,12 +1,8 @@
 package com.alvaroneira.questions;
 
-import com.alvaroneira.utils.ArrayUtils;
 import org.junit.Assert;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Tasks Details
@@ -56,30 +52,30 @@ import java.util.Iterator;
  */
 public class EquiLeader {
     /**
-     * def goldenLeader(A):
-     * n = len(A)
-     * size = 0
-     * for k in xrange(n):
-     * if (size == 0):
-     * size += 1
-     * value = A[k]
-     * else:
-     * if (value != A[k]):
-     * 10
-     * size -= 1
-     * else:
-     * size += 1
-     * candidate = -1
-     * if (size > 0):
-     * candidate = value
-     * leader = -1
-     * count = 0
-     * for k in xrange(n):
-     * if (A[k] == candidate):
-     * count += 1
-     * if (count > n // 2):
-     * leader = candidate
-     * return leader
+     def goldenLeader(A):
+     n = len(A)
+     size = 0
+     for k in xrange(n):
+     if (size == 0):
+     size += 1
+     value = A[k]
+     else:
+     if (value != A[k]):
+     10
+     size -= 1
+     else:
+     size += 1
+     candidate = -1
+     if (size > 0):
+     candidate = value
+     leader = -1
+     count = 0
+     for k in xrange(n):
+     if (A[k] == candidate):
+     count += 1
+     if (count > n // 2):
+     leader = candidate
+     return leader
      */
     public int goldenLeader(Integer[] A) {
         Integer n = A.length;
@@ -201,7 +197,7 @@ public class EquiLeader {
         return leader;
     }
 
-    public int solution(int[] A) {
+    public int solutionNSquared(int[] A) {
         Integer retVal = 0;
         Integer n = A.length;
         for (Integer i = 0; i < n - 1; i++) {
@@ -213,32 +209,139 @@ public class EquiLeader {
         return retVal;
     }
 
+    public int forward(int[] A) {
+        Integer n = A.length;
+        HashMap<Integer,Integer> counts=new HashMap<Integer, Integer>();
+        counts.put(A[0],1);
+        Iter zero=new Iter();
+        zero.stackSize=1;
+        zero.stackTopValue=A[0];
+        zero.candidate=A[0];
+        zero.leader=A[0];
+        Iter[] iterations=new Iter[n];
+        iterations[0]=zero;
+
+        for(Integer i=1;i<n;i++){
+            iterations[i]=dynamicLeader(A,i, i, iterations[i-1], counts);
+        }
+        return iterations[n-1].leader;
+    }
+
+    public int reverse(int[] A) {
+        Integer n = A.length;
+        HashMap<Integer,Integer> reverseCounts=new HashMap<Integer, Integer>();
+        reverseCounts.put(A[n-1],1);
+        Iter last=new Iter();
+        last.stackSize=1;
+        last.stackTopValue=A[n-1];
+        last.candidate=A[n-1];
+        last.leader=A[n-1];
+        Iter[] iterationsReverse=new Iter[n];
+        iterationsReverse[n-1]=last;
+
+        for(Integer i=n-2;i>=0;i--){
+            iterationsReverse[i]=dynamicLeader(A,i,n-i, iterationsReverse[i+1], reverseCounts);
+        }
+        return iterationsReverse[0].leader;
+    }
+    class Iter{
+        Integer stackSize;
+        Integer stackTopValue;
+        Integer candidate;
+        Integer leader;
+    }
+    public Iter dynamicLeader(int[] A, Integer i, Integer c, Iter oldIter, HashMap<Integer,Integer> counts) {
+        Iter newIter=new Iter();
+        if (oldIter.stackSize == 0) {
+            newIter.stackSize = 1;
+            newIter.stackTopValue = A[i];
+        } else {
+            if (oldIter.stackTopValue != A[i]) {
+                newIter.stackSize=oldIter.stackSize-1;
+            } else {
+                newIter.stackSize=oldIter.stackSize+1;
+            }
+            newIter.stackTopValue=oldIter.stackTopValue;
+        }
+
+
+        newIter.candidate = -1;
+        if (newIter.stackSize > 0) {
+            newIter.candidate = newIter.stackTopValue;
+        }
+
+        counts.put(A[i],counts.containsKey(A[i]) ? counts.get(A[i])+1:1);
+
+        newIter.leader = -1;
+
+        if ((counts.containsKey(newIter.candidate) ? counts.get(newIter.candidate):0) > c / 2) {
+            newIter.leader = newIter.candidate;
+        }
+        return newIter;
+    }
+    public int solution(int[] A) {
+        Integer n = A.length;
+        Integer retVal=0;
+        HashMap<Integer,Integer> counts=new HashMap<Integer, Integer>();
+        counts.put(A[0],1);
+        Iter zero=new Iter();
+        zero.stackSize=1;
+        zero.stackTopValue=A[0];
+        zero.candidate=A[0];
+        zero.leader=A[0];
+        Iter[] iterations=new Iter[n];
+        iterations[0]=zero;
+
+        for(Integer i=1;i<n;i++){
+            iterations[i]=dynamicLeader(A,i, i, iterations[i-1], counts);
+        }
+        HashMap<Integer,Integer> reverseCounts=new HashMap<Integer, Integer>();
+        reverseCounts.put(A[n-1],1);
+        Iter last=new Iter();
+        last.stackSize=1;
+        last.stackTopValue=A[n-1];
+        last.candidate=A[n-1];
+        last.leader=A[n-1];
+        Iter[] iterationsReverse=new Iter[n];
+        iterationsReverse[n-1]=last;
+
+        for(Integer i=n-2;i>=0;i--){
+            iterationsReverse[i]=dynamicLeader(A,i,n-i, iterationsReverse[i+1], reverseCounts);
+        }
+
+        for(Integer i=0;i<n-1;i++){
+            if(iterations[i].leader!=-1 && iterations[i].leader.intValue()==iterationsReverse[i+1].leader.intValue()){
+                retVal++;
+            }
+        }
+        return retVal;
+    }
     public static void main(String[] args) {
         EquiLeader el = new EquiLeader();
 
-        Assert.assertEquals(4, el.customLeader(new Integer[]{4, 3, 4, 4, 4, 2}));
-        Assert.assertEquals(6, el.customLeader(new Integer[]{6, 8, 4, 6, 8, 6, 6}));
-        Assert.assertEquals(4, el.customLeader(new Integer[]{4}));
-        Assert.assertEquals(4, el.customLeader(new Integer[]{3, 4, 4, 4, 2}));
-        Assert.assertEquals(4, el.customLeader(new Integer[]{4, 3, 4}));
-        Assert.assertEquals(4, el.customLeader(new Integer[]{4, 4, 2}));
-
-
-        Assert.assertEquals(4, el.getLeaderNLogN(new int[]{4, 3, 4, 4, 4, 2}, 0, 6));
-        Assert.assertEquals(6, el.getLeaderNLogN(new int[]{6, 8, 4, 6, 8, 6, 6}, 0, 7));
-        Assert.assertEquals(4, el.getLeaderNLogN(new int[]{4}, 0, 1));
-        Assert.assertEquals(4, el.getLeaderNLogN(new int[]{3, 4, 4, 4, 2}, 0, 5));
-        Assert.assertEquals(4, el.getLeaderNLogN(new int[]{4, 3, 4}, 0, 3));
-        Assert.assertEquals(4, el.getLeaderNLogN(new int[]{4, 4, 2}, 0, 3));
-        Assert.assertEquals(4, el.getLeaderNLogN(new int[]{4, 3, 4, 4, 4, 2}, 0, 1));
-        Assert.assertEquals(4, el.getLeaderNLogN(new int[]{4, 3, 4, 4, 4, 2}, 0, 3));
-        Assert.assertEquals(4, el.getLeaderNLogN(new int[]{4, 3, 4, 4, 4, 2}, 3, 6));
-
-        Assert.assertEquals(4, el.getLeaderNLogN(new int[]{4, 3, 4, 4, 4, 2}, 1, 6));
-
-        Assert.assertEquals(2, el.solution(new int[]{4, 3, 4, 4, 4, 2}));
-
-        Assert.assertEquals(0, el.solution(new int[]{1, 2, 3, 4, 5}));
+//        Assert.assertEquals(4, el.forward(new int[]{4}));
+//        Assert.assertEquals(-1, el.forward(new int[]{4, 3}));
+//        Assert.assertEquals(4, el.forward(new int[]{4, 3, 4}));
+//        Assert.assertEquals(4, el.forward(new int[]{4, 3, 4, 4}));
+//        Assert.assertEquals(4, el.forward(new int[]{4, 3, 4, 4, 4}));
+//        Assert.assertEquals(4, el.forward(new int[]{4, 3, 4, 4, 4, 2}));
+//
+//        Assert.assertEquals(5, el.forward(new int[]{5}));
+//        Assert.assertEquals(-1, el.forward(new int[]{4, 5}));
+//        Assert.assertEquals(-1, el.forward(new int[]{3, 4, 5}));
+//        Assert.assertEquals(-1, el.forward(new int[]{1, 2, 3, 4, 5}));
+//
+//        Assert.assertEquals(4, el.forward(new int[]{4, 3, 4, 4, 4, 2}));
+//        Assert.assertEquals(6, el.forward(new int[]{6, 8, 4, 6, 8, 6, 6}));
+//        Assert.assertEquals(4, el.forward(new int[]{4}));
+//        Assert.assertEquals(4, el.forward(new int[]{3, 4, 4, 4, 2}));
+//        Assert.assertEquals(4, el.forward(new int[]{4, 3, 4}));
+//        Assert.assertEquals(4, el.forward(new int[]{4, 4, 2}));
+//
+//        Assert.assertEquals(2, el.solution(new int[]{4, 3, 4, 4, 4, 2}));
+//
+//        Assert.assertEquals(0, el.solution(new int[]{1, 2, 3, 4, 5}));
+        Assert.assertEquals(1, el.solution(new int[]{-1000000000, -1000000000}));
         System.out.println("OK");
     }
 
